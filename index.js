@@ -16,6 +16,10 @@ const axios = require('axios');
 const express = require('express');
 const app = express();
 
+// Beautify JSON
+var beautify = require("json-beautify");
+
+app.set('json spaces', 2);
 
 // Call Express server
 app.get('/', (req, res) => {
@@ -91,15 +95,15 @@ app.get('/', (req, res) => {
                     async function callMiro(){
                         try {
                             let response = await axios(config);
-                            console.log(JSON.stringify(response.data));
+                            console.log(beautify(response.data));
 
-                            let miroData = JSON.stringify(response.data);
+                            let miroData = beautify(response.data);
 
                             axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
-                                //console.log(apiRes);
-                                                            //let miroResponse = JSON.stringify(response.data);
+                            //console.log(apiRes);
+                            //let miroResponse = JSON.stringify(response.data);
                             // Display response in browser
-                            let JSONResponse = `<pre><code>${miroData}</code></pre>`
+                            let JSONResponse = `<pre>${miroData}</pre>`
                             res.send(`
                             <style>
                                 .container p {

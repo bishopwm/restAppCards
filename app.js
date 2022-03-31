@@ -16,20 +16,23 @@ app.engine('hbs', exphbs.engine({
     extname: '.hbs'
 }));
 
-// Retrieve stored request data:
-
-
-
 
 
 app.set('view engine', 'hbs');
 
 app.get('/', (req, res) => {
+ res.render('home')
+});
+
+
+app.get("/get-cards", (req, res) => {
+    //res.render('miro.hbs');
+
     async function getStoredData(){
         await axios.get("https://ironrest.herokuapp.com/whaleWatcher231").then(response => {
             console.log(response);
             let miroData = response.data
-            res.render('home', {
+            res.render('miro', {
                 content: {
                     title: miroData[3].miroData
                 }
@@ -38,8 +41,23 @@ app.get('/', (req, res) => {
         return
     }
     getStoredData()
-});
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.listen(8000, () => {
-    console.log('The web server has started on port 3000');
+    console.log('The web server has started on port 8000');
 });
