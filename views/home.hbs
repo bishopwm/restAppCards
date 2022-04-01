@@ -2,27 +2,9 @@
 
 <div>
     <h3>Create App Card</h3>
-
-    
-    {{!-- <form class="form form-group" action="/send-message" method="POST">
-        <div class="form-components-container">
-            <label>Card Title</label><br>
-            <input name="To" type="text" placeholder="Title"><br>
-            <label id="message-label">Card Description</label><br>
-            <input id="message-input" name="Text" type="text" placeholder="Description"><br><br>
-            <div class="alert alert-success col-2" role="alert" style="visibility: hidden">
-            Message Sent!
-            </div>
-            <input class="btn btn-primary" id="submit" type="submit" value="Submit"/>
-        </div>
-    </form> --}}
-
-
-     <form class="form form-group" action="/get-cards" method="GET">
+     <form class="form form-group" action="/get-card" method="GET">
         <input class="btn btn-primary" id="submit" type="submit" value="GET appCard"/>
      </form>
-    
-
     <p>I'm content coming from app.js: "{{content.title}}"</p>
 </div>
 

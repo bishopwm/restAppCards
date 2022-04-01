@@ -16,11 +16,6 @@ const axios = require('axios');
 const express = require('express');
 const app = express();
 
-// Beautify JSON
-var beautify = require("json-beautify");
-
-app.set('json spaces', 2);
-
 // Call Express server
 app.get('/', (req, res) => {
 
@@ -51,6 +46,8 @@ app.get('/', (req, res) => {
                 // Console log accesss_token and reference_token:
                 console.log(`access_token: ${oauthResponse.data.access_token}`)
                 console.log(`access_token: ${oauthResponse.data.refresh_token}`)
+                
+
 
                 // Set global variable for access_token value
                 const access_token = oauthResponse.data.access_token;
@@ -95,30 +92,10 @@ app.get('/', (req, res) => {
                     async function callMiro(){
                         try {
                             let response = await axios(config);
-                            console.log(beautify(response.data));
-
-                            let miroData = beautify(response.data);
-
+                            let miroData = JSON.stringify(response.data);
                             axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
-                            //console.log(apiRes);
-                            //let miroResponse = JSON.stringify(response.data);
-                            // Display response in browser
-                            let JSONResponse = `<pre>${miroData}</pre>`
-                            res.send(`
-                            <style>
-                                .container p {
-                                    width: 80%;
-                                }
-                            </style>
-                                <div class="container">
-                                    <h1>Request successful</h1>
-                                    <h3>Miro API Response:</h3>
-                                    <p>${JSONResponse}<p>
-                                </div>
-                            `)
-                            });
-
-                            
+                            res.redirect(301, 'http://localhost:8000');
+                        });
 
                         } catch (err) {console.log(`ERROR: ${err}`)}
                     }
