@@ -10,11 +10,11 @@
 <hr> --}}
 
 
-<ul class="message-list">
+<ul class="message-list" style="list-style: none;">
     {{#each miroData}}
-    <h5 class="message-header">App Card {{this.data}}</h5>
-        <li><strong>Time Received:</strong> {{this}}</li>
-        <li><strong>From:</strong> {{this.data.description}}</li>
+    <h5 class="message-header">App Card</h5>
+        <li><strong>Title:</strong> {{this.data.title}}</li>
+        <li><strong>Description:</strong> {{this.data.description}}</li>
     <hr>
     {{/each}}
 </ul>
