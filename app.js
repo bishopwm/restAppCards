@@ -1,6 +1,3 @@
-// import access_token
-//access_token = require('./index');
-
 // Require sensitive environment variables (Client ID, Client Secret, Miro Board ID)
 require('dotenv/config');
 
@@ -25,7 +22,6 @@ app.engine('hbs', exphbs.engine({
     extname: '.hbs'
 }));
 
-
 // Configure handlebars
 app.set('view engine', 'hbs');
 
@@ -42,31 +38,34 @@ app.get("/get-card", (req, res) => {
         method: 'get',
         url: `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`,
         headers: { 
-        'Authorization': `Bearer ${oauthToken}`, 
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${oauthToken}` 
         }
     }
 
-
-    async function getStoredData(){
-        await axios(config).then(response => {
-            console.log(response);
-            let miroData = response.data;
-            res.render('viewCard', {
-                content: {
-                    title: miroData[0]
-                }
-            });
-        });
+    // function to call Miro API/retrieve App Cards
+    async function getCards(){
+        try {
+            let response = await axios(config);
+            let miroData = response.data.data;
+            console.log("API Response data: " + miroData);
+            
+            res.render('viewCard.hbs', {miroData});
+        } catch (err) {console.log(`ERROR: ${err}`)}
         return
     }
-    getStoredData()
+    getCards()
+
 });
 
 
 // Route to render `create card` view
   app.get("/create-card", (req, res) => {
     res.render('createCard')    
+});
+
+// Route to render `update card` view
+app.get("/update-card", (req, res) => {
+    res.render('updateCard')    
 });
 
 // Route for POST to create card endpoint (createCard.js)
@@ -78,14 +77,13 @@ app.post("/create-card", function(req,res) {
     console.log("REQUEST BODY " + req.body.Title);
 
 
-    //sender.createCard(cardTitle),
-
+    // Miro request URL for POST Create App Card:
     let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`
 
-    // get access_token 
+    // OAuth access_token
     let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
 
-// send request
+    // Request Payload
     let payload = JSON.stringify({
         "data": {
             "title": `${cardTitle}`,
@@ -99,6 +97,7 @@ app.post("/create-card", function(req,res) {
         }
     });
 
+    // Request configuration
     let config = {
         method: 'post',
         url: requestUrl,
@@ -108,10 +107,12 @@ app.post("/create-card", function(req,res) {
         },
         data: payload
     }
+    // Call Miro API to create App Card:
     async function callMiro(){
         try {
             let response = await axios(config);
             let miroData = JSON.stringify(response.data);
+            // Post response to external storage
             axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
                 console.log(apiRes);
             
@@ -122,7 +123,7 @@ app.post("/create-card", function(req,res) {
     callMiro();
 
 
-res.redirect(301, '/');
+    res.redirect(301, '/');
 });
 
 

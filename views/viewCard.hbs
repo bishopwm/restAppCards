@@ -1,3 +1,20 @@
-<h1>API Response</h1>
-<p>{{content.title}}</p>
+<br>
+<h2>Cards on Board</h2>
+<br>
+{{!-- <h4>App Card</h4>
+<p>{{miroData.id}}</p>
+<h4>Title</h4>
+<p>{{miroData.data.title}}</p>
+<h4>Description</h4>
+<p>{{miroData.data.description}}</p>
+<hr> --}}
 
+
+<ul class="message-list">
+    {{#each miroData}}
+    <h5 class="message-header">App Card {{this.data}}</h5>
+        <li><strong>Time Received:</strong> {{this}}</li>
+        <li><strong>From:</strong> {{this.data.description}}</li>
+    <hr>
+    {{/each}}
+</ul>
