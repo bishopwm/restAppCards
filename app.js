@@ -133,11 +133,81 @@ app.post("/create-card", function(req,res) {
 
 
 
+// Route to PATCH existing app card
+
+app.post("/update-card", function(req,res) {
+    console.log("Card ID : " + req.body.Id);
+    let cardId = req.body.Id
+    let newCardTitle = req.body.Title;
+    let newCardDescription = req.body.Description;
+    //let cardDescription = req.body.Description;
+    console.log("PATCH UPDATE DETAILS " + `Card ID: ${cardId}, Card Title: ${newCardTitle}, Card Desc: ${newCardDescription}`);
+
+
+    // Miro request URL for POST Create App Card:
+    let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards/${cardId}`
+
+    // OAuth access_token
+    let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
+
+    // Request Payload
+    // let payload = JSON.stringify({
+    //     "data": {
+    //         "title": `${newCardTitle}`,
+    //         "description": `${newCardDescription}`,
+    //         "style": {
+    //             "fillColor": "#2d9bf0"
+    //         },
+    //         "geometry": {
+    //             "rotation": "0.0"
+    //         }
+    //     }
+    // });
+
+    let payload = JSON.stringify({
+        "data": {
+             "title": newCardTitle,
+             "description": newCardDescription
+        },
+        "style": {
+             "fillColor": "#2d9bf0"
+        },
+        "geometry": {
+             "rotation": "0.0"
+        }
+   })
 
 
 
 
+    // Request configuration
+    let config = {
+        method: 'patch',
+        url: requestUrl,
+        headers: { 
+        'Authorization': `Bearer ${oauthToken}`, 
+        'Content-Type': 'application/json'
+        },
+        data: payload
+    }
+    // Call Miro API to create App Card:
+    async function callMiroUpdate(){
+        try {
+            let response = await axios(config);
+            let miroData = JSON.stringify(response.data);
+            // Post response to external storage
+            axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
+                console.log(apiRes);
+            
+        });
 
+        } catch (err) {console.log(`ERROR: ${err}`)}
+    }
+    callMiroUpdate();
+
+
+    res.redirect(301, '/');
+});
 
 
 app.listen(8000, () => {
