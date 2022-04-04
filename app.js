@@ -37,14 +37,24 @@ app.get('/', (req, res) => {
 // Route to retrieve card data
 app.get("/get-card", (req, res) => {
     //res.render('miro.hbs');
+    let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
+    let config = {
+        method: 'get',
+        url: `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`,
+        headers: { 
+        'Authorization': `Bearer ${oauthToken}`, 
+        'Content-Type': 'application/json'
+        }
+    }
+
 
     async function getStoredData(){
-        await axios.get("https://ironrest.herokuapp.com/whaleWatcher231").then(response => {
+        await axios(config).then(response => {
             console.log(response);
             let miroData = response.data;
             res.render('viewCard', {
                 content: {
-                    title: miroData[3].miroData
+                    title: miroData[0]
                 }
             });
         });
@@ -73,7 +83,7 @@ app.post("/create-card", function(req,res) {
     let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`
 
     // get access_token 
-    let oauthToken = 'DlCmlv4NhwEj0ts6Tav4reLdCUs';
+    let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
 
 // send request
     let payload = JSON.stringify({

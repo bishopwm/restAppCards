@@ -1,30 +1,13 @@
 
-
-
-
 // API request options
 
-// let payload = JSON.stringify({
-//     "data": {
-//         "title": `${cardTitle}`,
-//         "description": `${cardDescription}`
-//     },
-//     "style": {
-//         "fillColor": "#2d9bf0"
-//     },
-//     "geometry": {
-//         "rotation": "0.0"
-//     }
-// });
-
 // let config = {
-//     method: 'post',
+//     method: 'get',
 //     url: requestUrl,
 //     headers: { 
 //     'Authorization': `Bearer ${access_token}`, 
 //     'Content-Type': 'application/json'
-//     },
-//     data: payload
+//     }
 // }
 // async function callMiro(cardTitle, cardDescription){
 //     try {
@@ -36,6 +19,3 @@
 
 //     } catch (err) {console.log(`ERROR: ${err}`)}
 // }
-// callMiro();
-
-// module.exports.createCard = createCard;
