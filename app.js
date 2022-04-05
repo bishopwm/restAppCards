@@ -54,12 +54,15 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
 
     res.render('uploadCSV.hbs', {fileRows});
 
+
 });
 
 // Route for creation of CSV items
 app.post('/create-from-csv', function (req, res) {
-    console.log("Hello from parsed content ");
-    res.redirect(301, '/');
+    console.log("Hello from parsed content " + req.body.Content);
+    let cardContent = req.body.Content;
+    console.log(typeof(cardContent))
+    
 });
 
 
