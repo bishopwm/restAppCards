@@ -150,20 +150,6 @@ app.post("/update-card", function(req,res) {
     // OAuth access_token
     let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
 
-    // Request Payload
-    // let payload = JSON.stringify({
-    //     "data": {
-    //         "title": `${newCardTitle}`,
-    //         "description": `${newCardDescription}`,
-    //         "style": {
-    //             "fillColor": "#2d9bf0"
-    //         },
-    //         "geometry": {
-    //             "rotation": "0.0"
-    //         }
-    //     }
-    // });
-
     let payload = JSON.stringify({
         "data": {
              "title": newCardTitle,
@@ -176,9 +162,6 @@ app.post("/update-card", function(req,res) {
              "rotation": "0.0"
         }
    })
-
-
-
 
     // Request configuration
     let config = {
