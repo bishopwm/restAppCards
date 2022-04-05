@@ -48,25 +48,32 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
         console.log(fileRows)
         fs.unlinkSync(req.file.path);   // remove temp file
         //process "fileRows" and respond
-      })
-
-    console.log("File Rows :" + fileRows)
-
+      })  
+    
     res.render('uploadCSV.hbs', {fileRows});
-
 
 });
 
 // Route for creation of CSV items
 app.post('/create-from-csv', function (req, res) {
-    console.log("Hello from parsed content " + req.body.Content);
-    let cardContent = req.body.Content;
-    console.log(typeof(cardContent))
-    
+    console.log("Hello from parsed content ");
+    let cardTitle = req.body.Content.shift();
+    let cardDesc = req.body.Content.shift(1);
+    let tag1 = req.body.Content.shift(2);
+    let tag2 = req.body.Content.shift(3);
+    let tag3 = req.body.Content.shift(4);
+    let tag4 = req.body.Content.shift(5);
+
+
+    console.log("Title " + cardTitle);
+    console.log("Description " + cardDesc);  
+    console.log("Tag 1 " + tag1);
+    console.log("Tag 2 " + tag2);
+    console.log("Tag 3 " + tag3);
+    console.log("Tag 4 " + tag4);
 });
 
 
-//app.use('/upload-csv', router);
 
 // Configure express-handlebars as our view engine:
 app.engine('hbs', exphbs.engine({
