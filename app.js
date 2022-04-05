@@ -5,6 +5,9 @@ require('dotenv/config');
 const express = require('express');
 const exphbs = require('express-handlebars'); 
 
+// Require Router
+const Router = express.Router;
+
 // Require ExpressJS for local server
 const app = express();
 
@@ -15,6 +18,42 @@ const axios = require('axios');
 var bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
+
+// Require multer and fast-csv for CSV upload functionality
+const multer = require('multer');
+const csv = require('fast-csv');
+const http = require('http');
+const fs = require('fs');
+
+// Define upload csv destination
+const upload = multer({ dest: 'tmp/csv/' });
+const router = new Router();
+
+// Route to render upload CSV view
+app.get('/upload-csv', (req, res) => {
+    res.render('uploadCSV')
+   });
+
+// Define route for csv upload
+app.post('/upload-csv', upload.single('csv'), function (req, res) {
+    console.log("upload triggered, here is req :" + req)
+    const fileRows = [];
+
+    // open uploaded file
+    csv.parseFile(req.file.path)
+      .on("data", function (data) {
+        fileRows.push(data); // push each row
+      })
+      .on("end", function () {
+        console.log(fileRows)
+        fs.unlinkSync(req.file.path);   // remove temp file
+        //process "fileRows" and respond
+      })
+      res.redirect(301, '/');
+});
+
+//app.use('/upload-csv', router);
 
 // Configure express-handlebars as our view engine:
 app.engine('hbs', exphbs.engine({
