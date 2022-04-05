@@ -28,7 +28,6 @@ const fs = require('fs');
 
 // Define upload csv destination
 const upload = multer({ dest: 'tmp/csv/' });
-const router = new Router();
 
 // Route to render upload CSV view
 app.get('/upload-csv', (req, res) => {
@@ -37,7 +36,7 @@ app.get('/upload-csv', (req, res) => {
 
 // Define route for csv upload
 app.post('/upload-csv', upload.single('csv'), function (req, res) {
-    console.log("upload triggered, here is req :" + req)
+    //console.log("upload triggered, here is req :" + req)
     const fileRows = [];
 
     // open uploaded file
@@ -50,8 +49,19 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
         fs.unlinkSync(req.file.path);   // remove temp file
         //process "fileRows" and respond
       })
-      res.redirect(301, '/');
+
+    console.log("File Rows :" + fileRows)
+
+    res.render('uploadCSV.hbs', {fileRows});
+
 });
+
+// Route for creation of CSV items
+app.post('/create-from-csv', function (req, res) {
+    console.log("Hello from parsed content ");
+    res.redirect(301, '/');
+});
+
 
 //app.use('/upload-csv', router);
 
@@ -169,12 +179,6 @@ app.post("/create-card", function(req,res) {
 
     res.redirect(301, '/');
 });
-
-
-
-
-
-
 
 
 // Route to PATCH existing app card

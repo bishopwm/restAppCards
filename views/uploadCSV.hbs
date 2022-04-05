@@ -12,43 +12,27 @@
     <h2>Upload CSV</h2>
 </div>
 
-
-
-
-
-
-
-
-
-
-  
-
-  {{!-- <script>
-
-    var fileInput = document.getElementById('csv');
-    fileInput.addEventListener('change', function (event) {
-      var csvInput = event.target;
-      var file = csvInput.files[0];
-      Papa.parse(file, {
-        complete: function (results) {
-          console.log(results.data); 
-          // process the JSON
-        }
-      });
-    });
-  </script> --}}
-
-
 <form class="form form-group" action="/upload-csv" method="POST" enctype="multipart/form-data">
 <div class="form-components-container">
     <input id="csv" name="csv" type="file" accept=".csv">
     <div class="alert alert-success col-2" role="alert" style="visibility: hidden">
     Uploaded
     </div>
-    <input class="btn btn-primary" id="submit" type="submit" value="Submit"/>
-</div>
+    <input class="btn btn-primary" id="submit" type="submit" value="Parse .CSV"/>
     
+</div>
 </form>
+<br>
+    {{#each fileRows}}
+    <h5 class="message-header">App Card</h5>
+        <form class="form form-group" action="/create-from-csv" method="POST"></form>
+            {{#each this}}
+                    <input id="Content" name="Content" type="text" value="{{this}}">
+            {{/each}}
+            <input class="btn btn-secondary" id="submit" type="submit" value="Create"/>
+        </form>
+    <hr>
+    {{/each}}
 <script>
 $('#submit').click(function(){ 
    $('div').css('visibility','visible');
