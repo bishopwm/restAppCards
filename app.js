@@ -31,7 +31,8 @@ app.engine('hbs', exphbs.engine({
 // Configure handlebars
 app.set('view engine', 'hbs');
 
-
+// Declare global variable for Miro API endpoint (App Cards)
+const requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`
 
 // <-------- ROUTES -------->
 
@@ -62,12 +63,6 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
 // ROUTE(POST): CREATE CARDS FROM CSV CONTENT
 app.post('/create-from-csv', function (req, res) {
     let csvCardContent = req.body.Content;
-
-    // Miro request URL for POST Create App Card:
-    let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`
-
-    // OAuth access_token
-    let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
 
     // Loop through and make request for each line of CSV content
     let length = csvCardContent.length;
@@ -130,7 +125,7 @@ app.post('/create-from-csv', function (req, res) {
             method: 'post',
             url: requestUrl,
             headers: { 
-            'Authorization': `Bearer ${oauthToken}`, 
+            'Authorization': `Bearer ${process.env.oauthToken}`, 
             'Content-Type': 'application/json'
             },
             data: payload
@@ -165,9 +160,9 @@ app.get("/get-card", (req, res) => {
     let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
     let config = {
         method: 'get',
-        url: `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`,
+        url: requestUrl,
         headers: { 
-        'Authorization': `Bearer ${oauthToken}` 
+        'Authorization': `Bearer ${process.env.oauthToken}` 
         }
     }
     // Function to call Miro API/retrieve App Cards
@@ -205,12 +200,6 @@ app.get("/delete-card", (req, res) => {
 app.post("/create-card", function(req,res) {
     let cardTitle = req.body.Title;
     let cardDescription = req.body.Description;
-    
-    // Miro request URL for POST Create App Card:
-    let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`
-
-    // OAuth access_token
-    let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
 
     // API Request Payload
     let payload = JSON.stringify({
@@ -231,7 +220,7 @@ app.post("/create-card", function(req,res) {
         method: 'post',
         url: requestUrl,
         headers: { 
-        'Authorization': `Bearer ${oauthToken}`, 
+        'Authorization': `Bearer ${process.env.oauthToken}`, 
         'Content-Type': 'application/json'
         },
         data: payload
@@ -262,10 +251,7 @@ app.post("/update-card", function(req,res) {
     let newCardDescription = req.body.Description;
     
     // Miro request URL for POST Create App Card:
-    let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards/${cardId}`
-
-    // OAuth access_token
-    let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
+    let cardRequestUrl = requestUrl+`/${cardId}`
 
     let payload = JSON.stringify({
         "data": {
@@ -283,9 +269,9 @@ app.post("/update-card", function(req,res) {
     // API Request configuration
     let config = {
         method: 'patch',
-        url: requestUrl,
+        url: cardRequestUrl,
         headers: { 
-        'Authorization': `Bearer ${oauthToken}`, 
+        'Authorization': `Bearer ${process.env.oauthToken}`, 
         'Content-Type': 'application/json'
         },
         data: payload
@@ -314,17 +300,14 @@ app.post("/delete-card", function(req,res) {
     let cardId = req.body.Id
 
     // Miro request URL for POST Create App Card:
-    let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards/${cardId}`
-
-    // OAuth access_token
-    let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
+    let cardRequestUrl = requestUrl+`/${cardId}`
 
     // Request configuration
     let config = {
         method: 'delete',
-        url: requestUrl,
+        url: cardRequestUrl,
         headers: { 
-        'Authorization': `Bearer ${oauthToken}`, 
+        'Authorization': `Bearer ${process.env.oauthToken}`, 
         'Content-Type': 'application/json'
         }
     }
