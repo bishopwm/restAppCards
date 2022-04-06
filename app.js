@@ -71,7 +71,98 @@ app.post('/create-from-csv', function (req, res) {
     console.log("Tag 2 " + tag2);
     console.log("Tag 3 " + tag3);
     console.log("Tag 4 " + tag4);
+
+
+
+    // Miro request URL for POST Create App Card:
+    let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`
+
+    // OAuth access_token
+    let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
+
+    // Request Payload
+    let payload = JSON.stringify({
+        "data": {
+            "title": `${cardTitle}`,
+            "description": `${cardDesc}`,
+            "fields": [
+                {
+                    "value": `${tag1}`,
+                    "fillColor": "#2fa9e3",
+                    "textColor": "#1a1a1a",
+                    "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+                    "iconShape": "round",
+                    "tooltip": "tooltip"
+                },
+                {
+                    "value": `${tag2}`,
+                    "fillColor": "#2fa9e3",
+                    "textColor": "#1a1a1a",
+                    "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+                    "iconShape": "round",
+                    "tooltip": "tooltip"
+                },
+                {
+                    "value": `${tag3}`,
+                    "fillColor": "#2fa9e3",
+                    "textColor": "#1a1a1a",
+                    "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+                    "iconShape": "round",
+                    "tooltip": "tooltip"
+                },
+                {
+                    "value": `${tag4}`,
+                    "fillColor": "#2fa9e3",
+                    "textColor": "#1a1a1a",
+                    "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+                    "iconShape": "round",
+                    "tooltip": "tooltip"
+                }
+            ]
+        },
+        "style": {
+            "fillColor": "#2d9bf0"
+        },
+        "geometry": {
+            "rotation": "0.0"
+        }
+    });
+
+    // Request configuration
+    let config = {
+        method: 'post',
+        url: requestUrl,
+        headers: { 
+        'Authorization': `Bearer ${oauthToken}`, 
+        'Content-Type': 'application/json'
+        },
+        data: payload
+    }
+    // Call Miro API to create App Card:
+    async function callMiro(){
+        try {
+            let response = await axios(config);
+            let miroData = JSON.stringify(response.data);
+            // Post response to external storage
+            axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
+                console.log(apiRes);
+            
+        });
+
+        } catch (err) {console.log(`ERROR: ${err}`)}
+    }
+    callMiro();
+
+
+
+
+
+
 });
+
+
+
+
 
 
 
@@ -266,19 +357,6 @@ app.post("/delete-card", function(req,res) {
 
     // OAuth access_token
     let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
-
-//     let payload = JSON.stringify({
-//         "data": {
-//              "title": newCardTitle,
-//              "description": newCardDescription
-//         },
-//         "style": {
-//              "fillColor": "#2d9bf0"
-//         },
-//         "geometry": {
-//              "rotation": "0.0"
-//         }
-//    })
 
     // Request configuration
     let config = {
