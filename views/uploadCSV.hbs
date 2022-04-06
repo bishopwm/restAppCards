@@ -7,35 +7,38 @@
 <div class="send-container">
     <br>
     <h2>Upload CSV</h2>
+    <p>Select a file, then click <strong>Parse CSV</strong>.<br> <em>Note: </em>You will have the option to edit the card's fields prior to generating them.</p>
 </div>
 
 <form class="form form-group" action="/upload-csv" method="POST" enctype="multipart/form-data">
 <div class="form-components-container">
-    <input id="csv" name="csv" type="file" accept=".csv">
+    <input class="btn" id="csv" name="csv" type="file" accept=".csv">
     <div class="alert alert-success col-2" role="alert" style="visibility: hidden">
     Uploaded
     </div>
-    <input class="btn btn-primary" id="submit" type="submit" value="Parse CSV"/>
-    
+    <input class="btn btn-warning" id="parse" type="submit" value="Parse CSV"/>
+
 </div>
 </form>
-<br>
 
-<form class="form form-group" action="/create-from-csv" method="POST">
-<input class="btn btn-secondary" id="create-submit" type="submit" value="Create Cards"/><br><br>
-    <div id="csv-card-content">
-        {{#each fileRows}}
-        <ul style="list-style: none;">
-            {{#each this}}
-                <li>
-                    <input name="Content" type="text" value="{{this}}">
-                </li>
+<div id="csv-content-container">
+    <form class="form form-group" action="/create-from-csv" method="POST">
+    <input class="btn btn-success" id="create-submit" type="submit" value="Create Cards"/><br><br>
+        <div class="input-group mb-3" id="csv-card-content">
+            {{#each fileRows}}
+            <ul style="list-style: none;">
+                {{#each this}}
+                    <li>
+                        <input class="form-control" name="Content" type="text" value="{{this}}">
+                    </li>
+                {{/each}}
+            </ul>
             {{/each}}
-        </ul>
-        {{/each}}
-        
-    </div>
-</form>
+            
+        </div>
+    </form>
+</div>
+
 
 
 <script>
