@@ -30,7 +30,7 @@
         <ul style="list-style: none;">
             {{#each this}}
                 <li>
-                    <input name="Content" type="text" value={{this}}>
+                    <input name="Content" type="text" value="{{this}}">
                 </li>
             {{/each}}
             <input class="btn btn-primary" id="submit" type="submit" value="Create"/>
@@ -40,6 +40,20 @@
     </div>
 </form>
 
+
+{{!-- <form class="form form-group" action="/create-from-csv" method="POST"></form>
+
+    {{#each fileRows}}
+    <br>
+    {{#each this}}
+    <br>
+    <div>{{this}}</div>
+
+    {{/each}}
+
+    {{/each}}
+
+</form> --}}
 
 <script>
 $('#submit').click(function(){ 

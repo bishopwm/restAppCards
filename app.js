@@ -47,8 +47,9 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
       .on("end", function () {
         console.log(fileRows)
         fs.unlinkSync(req.file.path);   // remove temp file
-        //process "fileRows" and respond
+        fileRows.shift(); // remove csv headers (start with actual content)
       })  
+   
     
     res.render('uploadCSV.hbs', {fileRows});
 
@@ -56,14 +57,13 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
 
 // Route for creation of CSV items
 app.post('/create-from-csv', function (req, res) {
-    console.log("Hello from parsed content ");
-    let cardTitle = req.body.Content.shift();
+    console.log("Hello from parsed content " + req.body.Content);
+    let cardTitle = req.body.Content.shift(0);
     let cardDesc = req.body.Content.shift(1);
     let tag1 = req.body.Content.shift(2);
     let tag2 = req.body.Content.shift(3);
     let tag3 = req.body.Content.shift(4);
     let tag4 = req.body.Content.shift(5);
-
 
     console.log("Title " + cardTitle);
     console.log("Description " + cardDesc);  
@@ -152,11 +152,7 @@ app.post('/create-from-csv', function (req, res) {
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiro();
-
-
-
-
-
+res.redirect(301, '/get-card')
 
 });
 
