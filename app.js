@@ -1,20 +1,15 @@
 // Require sensitive environment variables (Client ID, Client Secret, Miro Board ID)
 require('dotenv/config');
 
-// Require handlebars for clientside rendering
+// Require express for server and handlebars for clientside rendering
 const express = require('express');
 const exphbs = require('express-handlebars'); 
-
-// Require Router
-const Router = express.Router;
-
-// Require ExpressJS for local server
 const app = express();
 
-// Require axios:
+// Require axios for http requests:
 const axios = require('axios');
 
-// Require body-parser to parse form submission
+// Require body-parser to parse form submissions
 var bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -25,16 +20,28 @@ const multer = require('multer');
 const csv = require('fast-csv');
 const http = require('http');
 const fs = require('fs');
-
-// Define upload csv destination
 const upload = multer({ dest: 'tmp/csv/' });
 
-// Route to render upload CSV view
+// Configure express-handlebars as our view engine:
+app.engine('hbs', exphbs.engine({
+    defaultLayout: 'main',
+    extname: '.hbs'
+}));
+
+// Configure handlebars
+app.set('view engine', 'hbs');
+
+
+
+// <-------- ROUTES -------->
+
+
+// ROUTE(GET): VIEW UPLOAD .CSV OPTION
 app.get('/upload-csv', (req, res) => {
     res.render('uploadCSV')
    });
 
-// Define route for csv upload
+// ROUTE(POST): UPLOAD .CSV FILE
 app.post('/upload-csv', upload.single('csv'), function (req, res) {
     //console.log("upload triggered, here is req :" + req)
     const fileRows = [];
@@ -49,48 +56,12 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
         fs.unlinkSync(req.file.path);   // remove temp file
         fileRows.shift(); // remove csv headers (start with actual content)
       })  
-   
-    
     res.render('uploadCSV.hbs', {fileRows});
-
 });
 
-// Route for creation of CSV items
+// ROUTE(POST): CREATE CARDS FROM CSV CONTENT
 app.post('/create-from-csv', function (req, res) {
-    console.log("Hello from parsed content " + req.body.Content);
-
     let csvCardContent = req.body.Content;
-
-    // let cardTitle1 = csvCardContent.shift();
-    // let cardDesc1 = csvCardContent.shift(1);
-    // let tag1_1 = csvCardContent.shift(2);
-    // let tag2_1 = csvCardContent.shift(3);
-    // let tag3_1 = csvCardContent.shift(4);
-    // let tag4_1 = csvCardContent.shift(5);
-
-    // console.log("Title " + cardTitle1);
-    // console.log("Description " + cardDesc1);  
-    // console.log("Tag 1 " + tag1_1);
-    // console.log("Tag 2 " + tag2_1);
-    // console.log("Tag 3 " + tag3_1);
-    // console.log("Tag 4 " + tag4_1);
-    
-    // let cardTitle2 = csvCardContent.shift(6);
-    // let cardDesc2 = csvCardContent.shift(7);
-    // let tag1_2 = csvCardContent.shift(8);
-    // let tag2_2 = csvCardContent.shift(9);
-    // let tag3_2 = csvCardContent.shift(10);
-    // let tag4_2 = csvCardContent.shift(11);
-
-
-    // console.log("Title 2 :" + cardTitle2)
-    // console.log("Description " + cardDesc2);  
-    // console.log("Tag 1 " + tag1_2);
-    // console.log("Tag 2 " + tag2_2);
-    // console.log("Tag 3 " + tag3_2);
-    // console.log("Tag 4 " + tag4_2);
-
-
 
     // Miro request URL for POST Create App Card:
     let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`
@@ -98,16 +69,11 @@ app.post('/create-from-csv', function (req, res) {
     // OAuth access_token
     let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
 
-    // make request for each card content
-    
-
-
-
-
+    // Loop through and make request for each line of CSV content
     let length = csvCardContent.length;
     for (let i = 0; i < length; i++) {
     
-        // Request Payload
+        // API Request Payload
         let payload = JSON.stringify({
             "data": {
                 "title": `${csvCardContent.slice(i).shift(i)}`,
@@ -159,9 +125,7 @@ app.post('/create-from-csv', function (req, res) {
                 "origin": "center"
             }
         });
-
-
-        // Request configuration
+        // API Request configuration
         let config = {
             method: 'post',
             url: requestUrl,
@@ -186,33 +150,18 @@ app.post('/create-from-csv', function (req, res) {
         }
         callMiro();
     }
-    
-res.redirect(301, '/get-card')
+    // Redirect to 'List Cards' view on success
+    res.redirect(301, '/get-card')
 });
 
 
-
-
-
-
-
-// Configure express-handlebars as our view engine:
-app.engine('hbs', exphbs.engine({
-    defaultLayout: 'main',
-    extname: '.hbs'
-}));
-
-// Configure handlebars
-app.set('view engine', 'hbs');
-
-// Route to render home view
+// ROUTE(GET): RENDER HOME VIEW
 app.get('/', (req, res) => {
  res.render('home')
 });
 
-// Route to retrieve card data
+// ROUTE(GET) RETRIEVE CARD DATA / 'List Cards'
 app.get("/get-card", (req, res) => {
-    //res.render('miro.hbs');
     let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
     let config = {
         method: 'get',
@@ -221,8 +170,7 @@ app.get("/get-card", (req, res) => {
         'Authorization': `Bearer ${oauthToken}` 
         }
     }
-
-    // function to call Miro API/retrieve App Cards
+    // Function to call Miro API/retrieve App Cards
     async function getCards(){
         try {
             let response = await axios(config);
@@ -238,37 +186,33 @@ app.get("/get-card", (req, res) => {
 });
 
 
-// Route to render `create card` view
+// ROUTE(GET): RENDER 'CREATE CARD' VIEW
   app.get("/create-card", (req, res) => {
     res.render('createCard')    
 });
 
-// Route to render `update card` view
+// ROUTE(GET): RENDER 'UPDATE CARD' VIEW
 app.get("/update-card", (req, res) => {
     res.render('updateCard')    
 });
 
-// Route to render `delete card` view
+// ROUTE(GET): RENDER 'DELETE CARD' VIEW
 app.get("/delete-card", (req, res) => {
     res.render('deleteCard')    
 });
 
-// Route for POST to create card endpoint (createCard.js)
+// ROUTE(POST): CREATE NEW APP CARD
 app.post("/create-card", function(req,res) {
-    //console.log(req.body.Title, req.body.Description);
     let cardTitle = req.body.Title;
     let cardDescription = req.body.Description;
-    //let cardDescription = req.body.Description;
-    console.log("REQUEST BODY " + req.body.Title);
-
-
+    
     // Miro request URL for POST Create App Card:
     let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`
 
     // OAuth access_token
     let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
 
-    // Request Payload
+    // API Request Payload
     let payload = JSON.stringify({
         "data": {
             "title": `${cardTitle}`,
@@ -282,7 +226,7 @@ app.post("/create-card", function(req,res) {
         }
     });
 
-    // Request configuration
+    // API Request configuration
     let config = {
         method: 'post',
         url: requestUrl,
@@ -306,23 +250,17 @@ app.post("/create-card", function(req,res) {
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiro();
-
-
     res.redirect(301, '/');
 });
 
 
-// Route to PATCH existing app card
+// ROUTE(POST): UPDATE EXISTING APP CARD
 
 app.post("/update-card", function(req,res) {
-    console.log("Card ID : " + req.body.Id);
     let cardId = req.body.Id
     let newCardTitle = req.body.Title;
     let newCardDescription = req.body.Description;
-    //let cardDescription = req.body.Description;
-    console.log("PATCH UPDATE DETAILS " + `Card ID: ${cardId}, Card Title: ${newCardTitle}, Card Desc: ${newCardDescription}`);
-
-
+    
     // Miro request URL for POST Create App Card:
     let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards/${cardId}`
 
@@ -342,7 +280,7 @@ app.post("/update-card", function(req,res) {
         }
    })
 
-    // Request configuration
+    // API Request configuration
     let config = {
         method: 'patch',
         url: requestUrl,
@@ -366,21 +304,14 @@ app.post("/update-card", function(req,res) {
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiroUpdate();
-
-
     res.redirect(301, '/');
 });
 
-// Route to DELETE existing app card
+// ROUTE(POST): DELETE EXISTING APP CARD
 
 app.post("/delete-card", function(req,res) {
     console.log("Card ID : " + req.body.Id);
     let cardId = req.body.Id
-    // let newCardTitle = req.body.Title;
-    // let newCardDescription = req.body.Description;
-    //let cardDescription = req.body.Description;
-    console.log("DELETE DETAILS " + `Card ID: ${cardId}`);
-
 
     // Miro request URL for POST Create App Card:
     let requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards/${cardId}`
@@ -405,14 +336,11 @@ app.post("/delete-card", function(req,res) {
             // Post response to external storage
             axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
                 console.log(apiRes);
-            
         });
 
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiroDelete();
-
-
     res.redirect(301, '/');
 });
 
