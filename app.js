@@ -58,19 +58,37 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
 // Route for creation of CSV items
 app.post('/create-from-csv', function (req, res) {
     console.log("Hello from parsed content " + req.body.Content);
-    let cardTitle = req.body.Content.shift(0);
-    let cardDesc = req.body.Content.shift(1);
-    let tag1 = req.body.Content.shift(2);
-    let tag2 = req.body.Content.shift(3);
-    let tag3 = req.body.Content.shift(4);
-    let tag4 = req.body.Content.shift(5);
 
-    console.log("Title " + cardTitle);
-    console.log("Description " + cardDesc);  
-    console.log("Tag 1 " + tag1);
-    console.log("Tag 2 " + tag2);
-    console.log("Tag 3 " + tag3);
-    console.log("Tag 4 " + tag4);
+    let csvCardContent = req.body.Content;
+
+    // let cardTitle1 = csvCardContent.shift();
+    // let cardDesc1 = csvCardContent.shift(1);
+    // let tag1_1 = csvCardContent.shift(2);
+    // let tag2_1 = csvCardContent.shift(3);
+    // let tag3_1 = csvCardContent.shift(4);
+    // let tag4_1 = csvCardContent.shift(5);
+
+    // console.log("Title " + cardTitle1);
+    // console.log("Description " + cardDesc1);  
+    // console.log("Tag 1 " + tag1_1);
+    // console.log("Tag 2 " + tag2_1);
+    // console.log("Tag 3 " + tag3_1);
+    // console.log("Tag 4 " + tag4_1);
+    
+    // let cardTitle2 = csvCardContent.shift(6);
+    // let cardDesc2 = csvCardContent.shift(7);
+    // let tag1_2 = csvCardContent.shift(8);
+    // let tag2_2 = csvCardContent.shift(9);
+    // let tag3_2 = csvCardContent.shift(10);
+    // let tag4_2 = csvCardContent.shift(11);
+
+
+    // console.log("Title 2 :" + cardTitle2)
+    // console.log("Description " + cardDesc2);  
+    // console.log("Tag 1 " + tag1_2);
+    // console.log("Tag 2 " + tag2_2);
+    // console.log("Tag 3 " + tag3_2);
+    // console.log("Tag 4 " + tag4_2);
 
 
 
@@ -80,80 +98,96 @@ app.post('/create-from-csv', function (req, res) {
     // OAuth access_token
     let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
 
-    // Request Payload
-    let payload = JSON.stringify({
-        "data": {
-            "title": `${cardTitle}`,
-            "description": `${cardDesc}`,
-            "fields": [
-                {
-                    "value": `${tag1}`,
-                    "fillColor": "#2fa9e3",
-                    "textColor": "#1a1a1a",
-                    "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-                    "iconShape": "round",
-                    "tooltip": "tooltip"
-                },
-                {
-                    "value": `${tag2}`,
-                    "fillColor": "#2fa9e3",
-                    "textColor": "#1a1a1a",
-                    "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-                    "iconShape": "round",
-                    "tooltip": "tooltip"
-                },
-                {
-                    "value": `${tag3}`,
-                    "fillColor": "#2fa9e3",
-                    "textColor": "#1a1a1a",
-                    "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-                    "iconShape": "round",
-                    "tooltip": "tooltip"
-                },
-                {
-                    "value": `${tag4}`,
-                    "fillColor": "#2fa9e3",
-                    "textColor": "#1a1a1a",
-                    "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-                    "iconShape": "round",
-                    "tooltip": "tooltip"
-                }
-            ]
-        },
-        "style": {
-            "fillColor": "#2d9bf0"
-        },
-        "geometry": {
-            "rotation": "0.0"
-        }
-    });
+    // make request for each card content
+    
 
-    // Request configuration
-    let config = {
-        method: 'post',
-        url: requestUrl,
-        headers: { 
-        'Authorization': `Bearer ${oauthToken}`, 
-        'Content-Type': 'application/json'
-        },
-        data: payload
-    }
-    // Call Miro API to create App Card:
-    async function callMiro(){
-        try {
-            let response = await axios(config);
-            let miroData = JSON.stringify(response.data);
-            // Post response to external storage
-            axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
-                console.log(apiRes);
-            
+
+
+
+    let length = csvCardContent.length;
+    for (let i = 0; i < length; i++) {
+    
+        // Request Payload
+        let payload = JSON.stringify({
+            "data": {
+                "title": `${csvCardContent.slice(i).shift(i)}`,
+                "description": `${csvCardContent.slice(i).shift(i++)}`,
+                "fields": [
+                    {
+                        "value": `${csvCardContent.slice(i).shift(i++)}`,
+                        "fillColor": "#2fa9e3",
+                        "textColor": "#1a1a1a",
+                        "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+                        "iconShape": "round",
+                        "tooltip": "tooltip"
+                    },
+                    {
+                        "value": `${csvCardContent.slice(i).shift(i++)}`,
+                        "fillColor": "#2fa9e3",
+                        "textColor": "#1a1a1a",
+                        "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+                        "iconShape": "round",
+                        "tooltip": "tooltip"
+                    },
+                    {
+                        "value": `${csvCardContent.slice(i).shift(i++)}`,
+                        "fillColor": "#2fa9e3",
+                        "textColor": "#1a1a1a",
+                        "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+                        "iconShape": "round",
+                        "tooltip": "tooltip"
+                    },
+                    {
+                        "value": `${csvCardContent.slice(i).shift(i++)}`,
+                        "fillColor": "#2fa9e3",
+                        "textColor": "#1a1a1a",
+                        "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+                        "iconShape": "round",
+                        "tooltip": "tooltip"
+                    }
+                ]
+            },
+            "style": {
+                "fillColor": "#2d9bf0"
+            },
+            "geometry": {
+                "rotation": "0.0"
+            },
+            "position": {
+                "x": 0 + (20*i),
+                "y": 20*i,
+                "origin": "center"
+            }
         });
 
-        } catch (err) {console.log(`ERROR: ${err}`)}
-    }
-    callMiro();
-res.redirect(301, '/get-card')
 
+        // Request configuration
+        let config = {
+            method: 'post',
+            url: requestUrl,
+            headers: { 
+            'Authorization': `Bearer ${oauthToken}`, 
+            'Content-Type': 'application/json'
+            },
+            data: payload
+        }
+        // Call Miro API to create App Card:
+        async function callMiro(){
+            try {
+                let response = await axios(config);
+                let miroData = JSON.stringify(response.data);
+                // Post response to external storage
+                axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
+                    console.log(apiRes);
+                
+            });
+
+            } catch (err) {console.log(`ERROR: ${err}`)}
+        }
+        callMiro();
+    }
+    
+res.redirect(301, '/get-card')
 });
 
 
