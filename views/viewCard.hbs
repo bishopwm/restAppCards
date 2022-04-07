@@ -2,6 +2,11 @@
 <h2>Cards on Board</h2>
 <br>
 
+<div>
+    <button class="btn btn-warning" onClick="fetchNewCards()">Fetch Cards</button>
+</div>
+
+<br>
 <ul class="message-list" style="list-style: none;">
     {{#each miroData}}
     <h5 class="message-header">App Card</h5>
@@ -11,3 +16,9 @@
     <hr>
     {{/each}}
 </ul>
+
+<script>
+    function fetchNewCards(){
+        window.location.reload();
+    }
+</script>
