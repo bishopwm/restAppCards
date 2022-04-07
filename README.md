@@ -1,59 +1,60 @@
-# Miro OAuth2.0 
+# Miro REST App Cards
+This sample app demonstrates the use of the Miro REST API's [App Card endpoints](https://beta.developers.miro.com/docs/app-card). It makes use of each of the available CRUD (create, read, update, delete) methods to add and manage App Cards on a Miro board. This sample app also provides one possible application of creating Miro App Cards from structured data (.CSV file).
+
+Miro capabilities covered in this sample app:
+- [x] Miro App Card items
+- [x] Create App Card API, GET App Card API, Update App Card API, DELETE App Card API
+- [x] Import structured data into Miro
+- [x] Miro Live Embed
 
 ## Prerequisites:
-- Create an app in Miro (https://miro.com/app/settings/user-profile/apps)
-- Install Localtunnel (or similar, such as Ngrok)
+- Create an [app in Miro](https://miro.com/app/settings/user-profile/apps)
+- Generate an OAuth access_token (see [Quickstart Guide](https://beta.developers.miro.com/docs/build-your-first-hello-world-app-1)) for authorization of our REST API **or** leverage our [OAuth 2.0 NodeJS sample app](https://github.com/miroapp/app-examples/tree/beta/examples/oauth/node) and include it in your project.
+
+## Dependencies:
+- NodeJS
+- HandlebarsJS
+- ExpressJS
+- Axios
+- Fast-CSV
 
 ## How to start:
 
 - Clone or download repo
 - cd to root folder
-- Run `npm install` to install dependencies.
+- Run `npm install` to install dependencies
 - Create a `.env` file in the root folder, and set the following variables:
 
 ```
-clientID={YOUR_CLIENT_ID)
-clientSecret={YOUR_CLIENT_SECRET}
-redirectURL={YOUR_REDIRECT_URL}
 boardId={MIRO_BOARD_ID}
+oauthToken={MIRO_ACCESS_TOKEN}
 ```
 
-In this example, we will host our local environment over `HTTPS` using [Localtunnel](https://www.npmjs.com/package/localtunnel). 
-(You can use other services such as [ngrok](https://ngrok.com/download) as well.)
+- From your desired Miro board, grab the board ID from the URL and paste it into the `.env` `boardId` variable (above)
 
-- Install [localtunnel](https://www.npmjs.com/package/localtunnel) (or your preferred service)
-- Generate your HTTPS URL (if using localtunnel, `lt --port 3000`) for localhost
-- Copy this HTTPS URL and paste it in the `Redirect URI for OAuth2.0` box in your Miro app settings
-- Paste this same HTTPS URL into your `.env` `redirectURL` variable (above)
-- From your desired Miro board, grab the board ID from the URL and paste it into your `.env` `boardId` variable (above)
-- From your Miro app settings, grab the Client ID and Client Secret. Paste this into your `.env` `clientId` and `clientSecret` variables (above)
+In this example, we will host the project locally at `PORT 8000`.
 
 ## How to run the project
-- Run `npm run start` to run the project
-- Your express server console should reflect "Listening on Localhost 3000" (or the port of your choice)
-- Once your server is running, copy the `Installation URL` for your app, under "Share App" in the Miro App UI
-- Navigate to the authorization screen via the Installation URL and authorize/install the app
-- This should redirect you to your Localtunnel URL, where you will see the JSON API response from the [GET Board API](https://beta.developers.miro.com/reference/get-a-board) displayed in the browser 
+- Run `nodemon app.js` to run the project
+- Your express server console should reflect "The web server has started on port 8000" (or the port of your choice)
   
-
-
 ## Folder structure
 
 ```
 .
 ├── package.json <-- The app dependencies which are installed in "How to start"
-└── index.js <-- The main Node.js script to run the OAuth and API request flow
+└── app.js <-- The main Node.js script to run the Express server and render our Handlebars app
 └── .env <-- File where you are storing your sensitive credentials
 └── node_modules <-- Node modules that are installed based on dependencies
+└── views
+      └── createCard.hbs <-- Handlebars file to render app card creation page
+      └── deleteCard.hbs <-- Handlebars file to render app card deletion page
+      └── updateCard.hbs <-- Handlebars file to render app card update page
+      └── uploadCard.hbs <-- Handlebars file to render app card upload page
+      └── viewCard.hbs <-- Handebars file to render app card list page
+      └── home.hbs <-- main Handlebars file to render universal/root rendering
+      └── layouts
+            └── main.hbs <-- the Handlebars app itself
 ```
 
 ### About the app
-
-This sample app is intended to demonstrate the OAuth 2.0 flow that is required to call Miro's V2 APIs. 
-Devs may consider using this Node.js demo as a structural basis for any other preferred language/framework.
-NOTE: Any comments with "--->" signify part of a significant step in the flow. Comments without "--->" are added for additional reference on code.
-
-For the full guide on Miro's OAuth 2.0 flow, please see the documentation here:
-https://beta.developers.miro.com/docs/getting-started-with-oauth 
-
-This app uses Express for a local server, Node.js, and Axios for making HTTP requests.
