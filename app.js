@@ -135,12 +135,7 @@ app.post('/create-from-csv', function (req, res) {
             try {
                 let response = await axios(config);
                 let miroData = JSON.stringify(response.data);
-                // Post response to external storage
-                axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
-                    console.log(apiRes);
-                
-            });
-
+                return miroData
             } catch (err) {console.log(`ERROR: ${err}`)}
         }
         callMiro();
@@ -171,7 +166,6 @@ app.get("/get-card", (req, res) => {
             let response = await axios(config);
             let miroData = response.data.data;
             console.log("API Response data: " + miroData);
-            
             res.render('viewCard.hbs', {miroData});
         } catch (err) {console.log(`ERROR: ${err}`)}
         return
@@ -230,12 +224,7 @@ app.post("/create-card", function(req,res) {
         try {
             let response = await axios(config);
             let miroData = JSON.stringify(response.data);
-            // Post response to external storage
-            axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
-                console.log(apiRes);
-            
-        });
-
+            return miroData;
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiro();
@@ -281,12 +270,7 @@ app.post("/update-card", function(req,res) {
         try {
             let response = await axios(config);
             let miroData = JSON.stringify(response.data);
-            // Post response to external storage
-            axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
-                console.log(apiRes);
-            
-        });
-
+            return miroData;
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiroUpdate();
@@ -316,11 +300,7 @@ app.post("/delete-card", function(req,res) {
         try {
             let response = await axios(config);
             let miroData = JSON.stringify(response.data);
-            // Post response to external storage
-            axios.post("https://ironrest.herokuapp.com/whaleWatcher231", {miroData}).then(apiRes => {
-                console.log(apiRes);
-        });
-
+            return miroData;
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiroDelete();
