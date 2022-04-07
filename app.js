@@ -1,4 +1,4 @@
-// Require sensitive environment variables (Client ID, Client Secret, Miro Board ID)
+// Require sensitive environment variables (oauthToken, Miro boardID)
 require('dotenv/config');
 
 // Require express for server and handlebars for clientside rendering
@@ -10,15 +10,14 @@ const app = express();
 const axios = require('axios');
 
 // Require body-parser to parse form submissions
-var bodyParser = require('body-parser')
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 
 // Require multer and fast-csv for CSV upload functionality
 const multer = require('multer');
 const csv = require('fast-csv');
-const http = require('http');
 const fs = require('fs');
 const upload = multer({ dest: 'tmp/csv/' });
 
@@ -141,7 +140,7 @@ app.post('/create-from-csv', function (req, res) {
         callMiro();
     }
     // Redirect to 'List Cards' view on success
-    res.redirect(301, '/get-card')
+    res.redirect(301, '/get-card');
 });
 
 
@@ -170,7 +169,7 @@ app.get("/get-card", (req, res) => {
         } catch (err) {console.log(`ERROR: ${err}`)}
         return
     }
-    getCards()
+    getCards();
 
 });
 
@@ -228,7 +227,7 @@ app.post("/create-card", function(req,res) {
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiro();
-    res.redirect(301, '/');
+    res.redirect(301, '/get-card');
 });
 
 
@@ -274,7 +273,7 @@ app.post("/update-card", function(req,res) {
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiroUpdate();
-    res.redirect(301, '/');
+    res.redirect(301, '/get-card');
 });
 
 // ROUTE(POST): DELETE EXISTING APP CARD
@@ -304,7 +303,7 @@ app.post("/delete-card", function(req,res) {
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiroDelete();
-    res.redirect(301, '/');
+    res.redirect(301, '/get-card');
 });
 
 
