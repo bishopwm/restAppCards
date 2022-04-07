@@ -1,5 +1,6 @@
 # Miro REST App Cards
-This sample app demonstrates the use of the Miro REST API's [App Card endpoints](https://beta.developers.miro.com/docs/app-card). It makes use of each of the available CRUD (create, read, update, delete) methods to add and manage App Cards on a Miro board. This sample app also provides one possible application of creating Miro App Cards from structured data (.CSV file).
+
+This sample app demonstrates the use of the Miro REST API's [App Card endpoints](https://beta.developers.miro.com/docs/app-card). It makes use of each of the available CRUD (create, read, update, delete) methods to add and manage App Cards on a Miro board. It also provides an example of creating Miro App Cards from external structured data (.CSV file) and embedding a Miro board via direct link.
 
 Miro capabilities covered in this sample app:
 - [x] Miro App Card items
@@ -13,10 +14,10 @@ Miro capabilities covered in this sample app:
 
 ## Dependencies:
 - NodeJS
-- HandlebarsJS
+- [HandlebarsJS](https://handlebarsjs.com/)
 - ExpressJS
 - Axios
-- Fast-CSV
+- [Fast-CSV](https://www.npmjs.com/package/fast-csv)
 
 ## How to start:
 
@@ -58,3 +59,5 @@ In this example, we will host the project locally at `PORT 8000`.
 ```
 
 ### About the app
+
+This is a backend app built on Node.js and Express.js, with Handlebars.js for rendering. 

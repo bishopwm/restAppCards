@@ -16,7 +16,6 @@
         "fast-csv": "^4.3.6",
         "json-beautify": "^1.1.1",
         "multer": "^1.4.4",
-        "papaparse": "^5.3.2",
         "prompt-sync": "^4.2.0"
     },
     "devDependencies": {
