@@ -190,28 +190,76 @@ app.get("/delete-card", (req, res) => {
 });
 
 // ROUTE(POST): CREATE NEW APP CARD
+// app.post("/create-card", function(req,res) {
+//     let cardTitle = req.body.Title;
+//     let cardDescription = req.body.Description;
+
+//     // API Request Payload
+//     let payload = JSON.stringify({
+//         "data": {
+//             "title": `${cardTitle}`,
+//             "description": `${cardDescription}`
+//         },
+//         "style": {
+//             "fillColor": "#2d9bf0"
+//         },
+//         "geometry": {
+//             "rotation": "0.0"
+//         }
+//     });
+
+//     // API Request configuration
+//     let config = {
+//         method: 'post',
+//         url: requestUrl,
+//         headers: { 
+//         'Authorization': `Bearer ${process.env.oauthToken}`, 
+//         'Content-Type': 'application/json'
+//         },
+//         data: payload
+//     }
+//     // Call Miro API to create App Card:
+//     async function callMiro(){
+//         try {
+//             let response = await axios(config);
+//             let miroData = JSON.stringify(response.data);
+//             return miroData;
+//         } catch (err) {console.log(`ERROR: ${err}`)}
+//     }
+//     callMiro();
+//     res.redirect(301, '/get-card');
+// });
+
+// ROUTE(POST): CREATE STICKY
+
 app.post("/create-card", function(req,res) {
-    let cardTitle = req.body.Title;
-    let cardDescription = req.body.Description;
+    let stickyTitle = req.body.Title;
+    let stickyDescription = req.body.Description;
+    let stickyTag1 = req.body.Tag1
+
 
     // API Request Payload
     let payload = JSON.stringify({
         "data": {
-            "title": `${cardTitle}`,
-            "description": `${cardDescription}`
+             "content": stickyTitle + " " + stickyDescription,
+             "shape": "square"
         },
         "style": {
-            "fillColor": "#2d9bf0"
+             "fillColor": "light_yellow",
+             "textAlign": "center",
+             "textAlignVertical": "top"
         },
-        "geometry": {
-            "rotation": "0.0"
+        "position": {
+             "x": 0,
+             "y": 0,
+             "origin": "center"
         }
-    });
+   });
 
     // API Request configuration
     let config = {
         method: 'post',
-        url: requestUrl,
+        url: `https://api.miro.com/v2/boards/${process.env.boardId}/sticky_notes`,
         headers: { 
         'Authorization': `Bearer ${process.env.oauthToken}`, 
         'Content-Type': 'application/json'
@@ -219,16 +267,84 @@ app.post("/create-card", function(req,res) {
         data: payload
     }
     // Call Miro API to create App Card:
+    
     async function callMiro(){
         try {
             let response = await axios(config);
-            let miroData = JSON.stringify(response.data);
-            return miroData;
+            let miroData = JSON.stringify(response.data.id);
+            //let miroData2 = miroData.id
+            
+            async function createTag(){
+
+                let tagPayload = {
+                    "fillColor": "blue",
+                    "title": stickyTag1
+                }
+                
+                let tagConfig = {
+                    method: 'post',
+                    url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
+                    headers: { 
+                    'Authorization': `Bearer ${process.env.oauthToken}`, 
+                    'Content-Type': 'application/json'
+                    },
+                    data: tagPayload
+                }
+
+                try {
+                    let tagResponse = await axios(tagConfig);
+                    let tagData = JSON.stringify(tagResponse.data);
+                    return tagData
+                    
+                } catch (err) {console.log(`ERROR taggg: ${err}`)}
+            }
+
+            createTag();
+                
+                async function attachStuff(){
+                    console.log("Sticky data: " + miroData)
+                    let stickyId = '3458764522945808263';
+                    let tagId = '3458764522932117297';
+
+                    try {
+
+                        // Need to figure out why stickyId and tagId are undefined when replaced with variables instead of hard coded
+
+                        let attachConfig = {
+                            method: 'post',
+                            url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId}`,
+                            headers: { 
+                            'Authorization': `Bearer ${process.env.oauthToken}`, 
+                            'Content-Type': 'application/json'
+                            }
+                        }
+
+                        let response = await axios(attachConfig);
+                        let attachData = JSON.stringify(response.data);
+                        return attachData;
+
+                    } catch (err) {console.log(`ERROR taggg: ${err}`)}
+
+                }
+                attachStuff()
+
+
+
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
-    callMiro();
+    callMiro().then(
+        console.log("You've called miro at this point!")
+    )
+
+    
     res.redirect(301, '/get-card');
 });
+
+
+
+
+
+
 
 
 // ROUTE(POST): UPDATE EXISTING APP CARD

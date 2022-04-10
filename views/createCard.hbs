@@ -6,16 +6,18 @@
 
 <br>
 <div class="send-container">
-    <h2>Create New App Card</h2>
+    <h2>Create New Sticky</h2>
 </div>
 <form class="form form-group" action="/create-card" method="POST">
 <div class="form-components-container">
-    <label>Card Title</label><br>
+    <label>Sticky Title</label><br>
     <input name="Title" type="text" placeholder="Title"><br>
-    <label>Card Description</label><br>
-    <input name="Description" type="text" placeholder="Description"><br><br>
+    <label>Sticky Dsc</label><br>
+    <input name="Description" type="text" placeholder="Description"><br>
+        <label>Tag Content</label><br>
+    <input name="Tag1" type="text" placeholder="Tag Content"><br><br>
     <div class="alert alert-success col-2" role="alert" style="visibility: hidden">
-    Card Created
+    Sticky Created
     </div>
     <input class="btn btn-primary" id="submit" type="submit" value="Submit"/>
 </div>
