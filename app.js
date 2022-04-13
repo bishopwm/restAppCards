@@ -268,11 +268,16 @@ app.post("/create-card", function(req,res) {
     }
     // Call Miro API to create App Card:
     
+    
+
     async function callMiro(){
+        let miroData;
+
         try {
             let response = await axios(config);
-            let miroData = JSON.stringify(response.data.id);
-            //let miroData2 = miroData.id
+            miroData = JSON.stringify(response.data.id);
+            
+            
             
             async function createTag(){
 
@@ -294,43 +299,42 @@ app.post("/create-card", function(req,res) {
                 try {
                     let tagResponse = await axios(tagConfig);
                     let tagData = JSON.stringify(tagResponse.data);
-                    return tagData
+                    console.log(tagData) 
                     
                 } catch (err) {console.log(`ERROR taggg: ${err}`)}
             }
 
             createTag();
                 
-                async function attachStuff(){
-                    console.log("Sticky data: " + miroData)
-                    let stickyId = '3458764522945808263';
-                    let tagId = '3458764522932117297';
+            async function attachTag(){
+                console.log("Sticky data: " + miroData)
+                //let stickyId = '3458764523173143248';
+                let stickyId = miroData.replace(/['"]+/g, '');
+                let tagId = '3458764522932117297';
 
-                    try {
-
-                        // Need to figure out why stickyId and tagId are undefined when replaced with variables instead of hard coded
-
-                        let attachConfig = {
-                            method: 'post',
-                            url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId}`,
-                            headers: { 
-                            'Authorization': `Bearer ${process.env.oauthToken}`, 
-                            'Content-Type': 'application/json'
-                            }
-                        }
-
-                        let response = await axios(attachConfig);
-                        let attachData = JSON.stringify(response.data);
-                        return attachData;
-
-                    } catch (err) {console.log(`ERROR taggg: ${err}`)}
-
+                let attachConfig = {
+                    method: 'post',
+                    url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId}`,
+                    headers: { 
+                    'Authorization': `Bearer ${process.env.oauthToken}`, 
+                    'Content-Type': 'application/json'
+                    }
                 }
-                attachStuff()
+
+                try {
+                    let response = await axios(attachConfig);
+                    let attachData = JSON.stringify(response.data);
+                    return attachData;
+
+                } catch (err) {console.log(`ERROR taggg: ${err}, value of 'stickyId' is: ${attachConfig.url}`)}
+
+            }
+            attachTag()
 
 
 
         } catch (err) {console.log(`ERROR: ${err}`)}
+        
     }
     callMiro().then(
         console.log("You've called miro at this point!")
