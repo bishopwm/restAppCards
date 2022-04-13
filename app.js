@@ -225,13 +225,20 @@ app.post("/create-card", function(req,res) {
         data: payload
     }
     
-    // Call Miro API to create App Card:
+    // Call Miro API to create Sticky:
     async function callMiro(){
         let miroData;
+        let tagId;
+        
         try {
+
+            
+            // Call Create Sticky endpoint
             let response = await axios(config);
             miroData = JSON.stringify(response.data.id);
             
+
+            tagId = await createTag();
             // Function to create tag item
             async function createTag(){
                 let tagPayload = {
@@ -247,10 +254,16 @@ app.post("/create-card", function(req,res) {
                     },
                     data: tagPayload
                 }
+
+                
+                
                 try {
                     let tagResponse = await axios(tagConfig);
-                    let tagData = JSON.stringify(tagResponse.data);
-                    console.log(tagData) 
+                    tagData = JSON.stringify(tagResponse.data.id);
+                    console.log("tag id: " + tagData)
+                    tagId = tagData;
+                    return tagId.replace(/['"]+/g, '');
+                    
                 } catch (err) {console.log(`ERROR taggg: ${err}`)}
             }
 
@@ -258,10 +271,7 @@ app.post("/create-card", function(req,res) {
             
             // Function to attach tag to sticky
             async function attachTag(){
-                //console.log("Sticky data: " + miroData)
                 let stickyId = miroData.replace(/['"]+/g, '');
-                let tagId = '3458764522932117297';
-
                 let attachConfig = {
                     method: 'post',
                     url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId}`,
@@ -273,15 +283,13 @@ app.post("/create-card", function(req,res) {
                 try {
                     let response = await axios(attachConfig);
                     let attachData = JSON.stringify(response.data);
-                    return attachData;
+                    console.log(attachData);
                 } catch (err) {console.log(`ERROR taggg: ${err}, value of 'stickyId' is: ${attachConfig.url}`)}
             }
             attachTag()
         } catch (err) {console.log(`ERROR: ${err}`)}   
     }
-    callMiro().then(
-        console.log("You've called miro at this point!")
-    )
+    callMiro();
     res.redirect(301, '/get-card');
 });
 
