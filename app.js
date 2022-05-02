@@ -63,88 +63,37 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
 app.post('/create-from-csv', function (req, res) {
     let csvCardContent = req.body.Content;
 
+    let stickyContent;
+
     // Loop through and make request for each line of CSV content
     let length = csvCardContent.length;
     for (let i = 0; i < length; i++) {
-    
+
+        stickyContent = {
+                "content": 
+                    `<strong>Title</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
+                    `<strong>Description</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
+                    `<strong>Tag1</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
+                    `<strong>Tag2</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
+                    `<strong>Tag3</strong>: ${csvCardContent.slice(i).shift(i++)}`
+                }
         // API Request Payload
         let payload = JSON.stringify({
 
             "data": {
-                "content": 
-                    `Title: ${csvCardContent.slice(i).shift(i)}` + 
-                    " " + 
-                    `Description: ${csvCardContent.slice(i).shift(i++)}` +
-                    " " +
-                    `Tag1: ${csvCardContent.slice(i).shift(i++)}` +
-                    " " +
-                    `Tag2: ${csvCardContent.slice(i).shift(i++)}` +
-                    " " +
-                    `Tag3: ${csvCardContent.slice(i).shift(i++)}` +
-                    " " +
-                    `Tag4: ${csvCardContent.slice(i).shift(i++)}`,
+                "content": `${stickyContent.content}`,
                 "shape": "square"
            },
            "style": {
-                "fillColor": "light_yellow",
-                "textAlign": "center",
+                "fillColor": "light_pink",
+                "textAlign": "left",
                 "textAlignVertical": "top"
            },
            "position": {
-                "x": 0 + (20*i),
-                "y": 20*i,
+                "x": 0 + (40*i),
+                "y": 40*i,
                 "origin": "center"
            }
-
-            // "data": {
-            //     "title": `${csvCardContent.slice(i).shift(i)}`,
-            //     "description": `${csvCardContent.slice(i).shift(i++)}`,
-            //     "fields": [
-            //         {
-            //             "value": `${csvCardContent.slice(i).shift(i++)}`,
-            //             "fillColor": "#2fa9e3",
-            //             "textColor": "#1a1a1a",
-            //             "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-            //             "iconShape": "round",
-            //             "tooltip": "tooltip"
-            //         },
-            //         {
-            //             "value": `${csvCardContent.slice(i).shift(i++)}`,
-            //             "fillColor": "#2fa9e3",
-            //             "textColor": "#1a1a1a",
-            //             "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-            //             "iconShape": "round",
-            //             "tooltip": "tooltip"
-            //         },
-            //         {
-            //             "value": `${csvCardContent.slice(i).shift(i++)}`,
-            //             "fillColor": "#2fa9e3",
-            //             "textColor": "#1a1a1a",
-            //             "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-            //             "iconShape": "round",
-            //             "tooltip": "tooltip"
-            //         },
-            //         {
-            //             "value": `${csvCardContent.slice(i).shift(i++)}`,
-            //             "fillColor": "#2fa9e3",
-            //             "textColor": "#1a1a1a",
-            //             "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-            //             "iconShape": "round",
-            //             "tooltip": "tooltip"
-            //         }
-            //     ]
-            // },
-            // "style": {
-            //     "fillColor": "#2d9bf0"
-            // },
-            // "geometry": {
-            //     "rotation": "0.0"
-            // },
-            // "position": {
-                // "x": 0 + (20*i),
-                // "y": 20*i,
-                // "origin": "center"
-            // }
         });
         // API Request configuration
         let config = {
@@ -165,6 +114,7 @@ app.post('/create-from-csv', function (req, res) {
             } catch (err) {console.log(`ERROR: ${err}`)}
         }
         callMiro();
+        console.log("Sticky Content lives here : " + stickyContent.content)
     }
     // Redirect to 'List Cards' view on success
     res.redirect(301, '/get-card');
@@ -178,7 +128,7 @@ app.get('/', (req, res) => {
 
 // ROUTE(GET) RETRIEVE CARD DATA / 'List Cards'
 app.get("/get-card", (req, res) => {
-    let oauthToken = '4s97a1_pYGhNfvvN7juRsWx0N_Q';
+    
     let config = {
         method: 'get',
         url: requestUrl,
