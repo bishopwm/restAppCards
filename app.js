@@ -69,60 +69,87 @@ app.post('/create-from-csv', function (req, res) {
     
         // API Request Payload
         let payload = JSON.stringify({
+
             "data": {
-                "title": `${csvCardContent.slice(i).shift(i)}`,
-                "description": `${csvCardContent.slice(i).shift(i++)}`,
-                "fields": [
-                    {
-                        "value": `${csvCardContent.slice(i).shift(i++)}`,
-                        "fillColor": "#2fa9e3",
-                        "textColor": "#1a1a1a",
-                        "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-                        "iconShape": "round",
-                        "tooltip": "tooltip"
-                    },
-                    {
-                        "value": `${csvCardContent.slice(i).shift(i++)}`,
-                        "fillColor": "#2fa9e3",
-                        "textColor": "#1a1a1a",
-                        "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-                        "iconShape": "round",
-                        "tooltip": "tooltip"
-                    },
-                    {
-                        "value": `${csvCardContent.slice(i).shift(i++)}`,
-                        "fillColor": "#2fa9e3",
-                        "textColor": "#1a1a1a",
-                        "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-                        "iconShape": "round",
-                        "tooltip": "tooltip"
-                    },
-                    {
-                        "value": `${csvCardContent.slice(i).shift(i++)}`,
-                        "fillColor": "#2fa9e3",
-                        "textColor": "#1a1a1a",
-                        "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
-                        "iconShape": "round",
-                        "tooltip": "tooltip"
-                    }
-                ]
-            },
-            "style": {
-                "fillColor": "#2d9bf0"
-            },
-            "geometry": {
-                "rotation": "0.0"
-            },
-            "position": {
+                "content": 
+                    `Title: ${csvCardContent.slice(i).shift(i)}` + 
+                    " " + 
+                    `Description: ${csvCardContent.slice(i).shift(i++)}` +
+                    " " +
+                    `Tag1: ${csvCardContent.slice(i).shift(i++)}` +
+                    " " +
+                    `Tag2: ${csvCardContent.slice(i).shift(i++)}` +
+                    " " +
+                    `Tag3: ${csvCardContent.slice(i).shift(i++)}` +
+                    " " +
+                    `Tag4: ${csvCardContent.slice(i).shift(i++)}`,
+                "shape": "square"
+           },
+           "style": {
+                "fillColor": "light_yellow",
+                "textAlign": "center",
+                "textAlignVertical": "top"
+           },
+           "position": {
                 "x": 0 + (20*i),
                 "y": 20*i,
                 "origin": "center"
-            }
+           }
+
+            // "data": {
+            //     "title": `${csvCardContent.slice(i).shift(i)}`,
+            //     "description": `${csvCardContent.slice(i).shift(i++)}`,
+            //     "fields": [
+            //         {
+            //             "value": `${csvCardContent.slice(i).shift(i++)}`,
+            //             "fillColor": "#2fa9e3",
+            //             "textColor": "#1a1a1a",
+            //             "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+            //             "iconShape": "round",
+            //             "tooltip": "tooltip"
+            //         },
+            //         {
+            //             "value": `${csvCardContent.slice(i).shift(i++)}`,
+            //             "fillColor": "#2fa9e3",
+            //             "textColor": "#1a1a1a",
+            //             "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+            //             "iconShape": "round",
+            //             "tooltip": "tooltip"
+            //         },
+            //         {
+            //             "value": `${csvCardContent.slice(i).shift(i++)}`,
+            //             "fillColor": "#2fa9e3",
+            //             "textColor": "#1a1a1a",
+            //             "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+            //             "iconShape": "round",
+            //             "tooltip": "tooltip"
+            //         },
+            //         {
+            //             "value": `${csvCardContent.slice(i).shift(i++)}`,
+            //             "fillColor": "#2fa9e3",
+            //             "textColor": "#1a1a1a",
+            //             "iconUrl": "https://cdn-icons-png.flaticon.com/512/5695/5695864.png",
+            //             "iconShape": "round",
+            //             "tooltip": "tooltip"
+            //         }
+            //     ]
+            // },
+            // "style": {
+            //     "fillColor": "#2d9bf0"
+            // },
+            // "geometry": {
+            //     "rotation": "0.0"
+            // },
+            // "position": {
+                // "x": 0 + (20*i),
+                // "y": 20*i,
+                // "origin": "center"
+            // }
         });
         // API Request configuration
         let config = {
             method: 'post',
-            url: requestUrl,
+            url: `https://api.miro.com/v2/boards/${process.env.boardId}/sticky_notes`,
             headers: { 
             'Authorization': `Bearer ${process.env.oauthToken}`, 
             'Content-Type': 'application/json'
@@ -229,23 +256,18 @@ app.post("/create-card", function(req,res) {
     async function callMiro(){
         let miroData;
         let tagId;
-        
         try {
-
-            
             // Call Create Sticky endpoint
             let response = await axios(config);
             miroData = JSON.stringify(response.data.id);
-            
-
             tagId = await createTag();
             // Function to create tag item
             async function createTag(){
-                let tagPayload = {
+                let tagPayload = JSON.stringify({
                     "fillColor": "blue",
                     "title": stickyTag1
-                }
-                let tagConfig = {
+                });
+                let config = {
                     method: 'post',
                     url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
                     headers: { 
@@ -254,21 +276,15 @@ app.post("/create-card", function(req,res) {
                     },
                     data: tagPayload
                 }
-
-                
-                
                 try {
-                    let tagResponse = await axios(tagConfig);
+                    let tagResponse = await axios(config);
                     tagData = JSON.stringify(tagResponse.data.id);
                     console.log("tag id: " + tagData)
-                    tagId = tagData;
-                    return tagId.replace(/['"]+/g, '');
-                    
-                } catch (err) {console.log(`ERROR taggg: ${err}`)}
+                    tagId = tagData.replace(/['"]+/g, '');
+                    return tagId;       
+                } catch (err) {console.log(`ERROR on createTag(): ${err}`)}   
             }
-
             createTag();
-            
             // Function to attach tag to sticky
             async function attachTag(){
                 let stickyId = miroData.replace(/['"]+/g, '');
@@ -284,7 +300,9 @@ app.post("/create-card", function(req,res) {
                     let response = await axios(attachConfig);
                     let attachData = JSON.stringify(response.data);
                     console.log(attachData);
-                } catch (err) {console.log(`ERROR taggg: ${err}, value of 'stickyId' is: ${attachConfig.url}`)}
+                    return attachData;
+
+                } catch (err) {console.log(`ERROR: ${err}`)}
             }
             attachTag()
         } catch (err) {console.log(`ERROR: ${err}`)}   
