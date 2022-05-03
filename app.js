@@ -63,7 +63,16 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
 app.post('/create-from-csv', function (req, res) {
     let csvCardContent = req.body.Content;
 
+    
+    //declare variables for sticky and tag content
     let stickyContent;
+    let tagContent1;
+    let tagContent2;
+    let tagContent3;
+
+    //declare variable to hold stored IDs
+    let storedData = [];
+    let tagContentCollection = [];
 
     // Loop through and make request for each line of CSV content
     let length = csvCardContent.length;
@@ -72,11 +81,21 @@ app.post('/create-from-csv', function (req, res) {
         stickyContent = {
                 "content": 
                     `<strong>Title</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
-                    `<strong>Description</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
-                    `<strong>Tag1</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
-                    `<strong>Tag2</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
-                    `<strong>Tag3</strong>: ${csvCardContent.slice(i).shift(i++)}`
+                    `<strong>Description</strong>: ${csvCardContent.slice(i).shift(i++)}`
                 }
+
+        tagContent1 = {
+            "tagContent": `${csvCardContent.slice(i).shift(i++)}`
+        }
+        tagContent2 = {
+            "tagContent": `${csvCardContent.slice(i).shift(i++)}`
+        }
+        tagContent3 = {
+            "tagContent": `${csvCardContent.slice(i).shift(i++)}`
+        }
+
+        tagContentCollection.push(tagContent1.tagContent, tagContent2.tagContent, tagContent3.tagContent, tagContent1.tagContent, tagContent2.tagContent, tagContent3.tagContent);
+
         // API Request Payload
         let payload = JSON.stringify({
 
@@ -106,16 +125,82 @@ app.post('/create-from-csv', function (req, res) {
             data: payload
         }
         // Call Miro API to create App Card:
+ 
+
         async function callMiro(){
+            
             try {
                 let response = await axios(config);
-                let miroData = JSON.stringify(response.data);
-                return miroData
+                let miroData = JSON.stringify(response.data.id);
+                console.log("Sticky ID : " + miroData); 
+
+                    async function createTag(){
+                        let tagPayload = JSON.stringify({
+                            "fillColor": "blue",
+                            "title": tagContentCollection[i]
+                        });
+                        let config = {
+                            method: 'post',
+                            url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
+                            headers: { 
+                            'Authorization': `Bearer ${process.env.oauthToken}`, 
+                            'Content-Type': 'application/json'
+                            },
+                            data: tagPayload
+                        }
+                        try {
+                            let tagResponse = await axios(config);
+                            tagData = JSON.stringify(tagResponse.data.id);
+                            console.log("Tag id: " + tagData)
+                            tagId = tagData.replace(/['"]+/g, '');
+
+                                async function attachTag(){
+                                    let stickyId = miroData.replace(/['"]+/g, '');
+                                    let attachConfig = {
+                                        method: 'post',
+                                        url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId}`,
+                                        headers: { 
+                                        'Authorization': `Bearer ${process.env.oauthToken}`, 
+                                        'Content-Type': 'application/json'
+                                        }
+                                    }
+                                    
+                                    try {
+                                        let response = await axios(attachConfig);
+                                        let attachData = JSON.stringify(response.data);
+                                        console.log(attachData);
+                                        console.log("attach url : " + attachConfig.url)
+                                        return attachData;
+                    
+                                    } catch (err) {console.log(`ERROR: ${err}`)}
+                                }
+                                attachTag()
+
+                        } catch (err) {console.log(`ERROR on createTag(): ${err}`)}   
+                    }
+                    createTag();
+
+                
             } catch (err) {console.log(`ERROR: ${err}`)}
+            
         }
         callMiro();
-        console.log("Sticky Content lives here : " + stickyContent.content)
+
+        console.log("Sticky Content lives here : " + stickyContent.content);
+        console.log("Tag content 1 : " + tagContent1.tagContent)
+        console.log("Tag content 2 : " + tagContent2.tagContent)
+        console.log("Tag content 3 : " + tagContent3.tagContent)
+
+       
+                
+
+    
+
     }
+    
+
+    //console.log("stored data : " + storedData)
+
     // Redirect to 'List Cards' view on success
     res.redirect(301, '/get-card');
 });
@@ -141,7 +226,7 @@ app.get("/get-card", (req, res) => {
         try {
             let response = await axios(config);
             let miroData = response.data.data;
-            console.log("API Response data: " + miroData);
+            //console.log("API Response data: " + miroData);
             res.render('viewCard.hbs', {miroData});
         } catch (err) {console.log(`ERROR: ${err}`)}
         return
