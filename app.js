@@ -94,7 +94,14 @@ app.post('/create-from-csv', function (req, res) {
             "tagContent": `${csvCardContent.slice(i).shift(i++)}`
         }
 
-        tagContentCollection.push(tagContent1.tagContent, tagContent2.tagContent, tagContent3.tagContent, tagContent1.tagContent, tagContent2.tagContent, tagContent3.tagContent);
+        tagContentCollection.push(
+            tagContent1.tagContent, 
+            tagContent2.tagContent, 
+            tagContent3.tagContent, 
+            tagContent1.tagContent, 
+            tagContent2.tagContent, 
+            tagContent3.tagContent
+            );
 
         // API Request Payload
         let payload = JSON.stringify({
