@@ -31,7 +31,7 @@ app.engine('hbs', exphbs.engine({
 app.set('view engine', 'hbs');
 
 // Declare global variable for Miro API endpoint (App Cards)
-const requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/app_cards`
+const requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/sticky_notes`
 
 // <-------- ROUTES -------->
 
@@ -193,20 +193,12 @@ app.post('/create-from-csv', function (req, res) {
         }
         callMiro();
 
-        console.log("Sticky Content lives here : " + stickyContent.content);
-        console.log("Tag content 1 : " + tagContent1.tagContent)
-        console.log("Tag content 2 : " + tagContent2.tagContent)
-        console.log("Tag content 3 : " + tagContent3.tagContent)
-
+        // console.log("Sticky Content lives here : " + stickyContent.content);
+        // console.log("Tag content 1 : " + tagContent1.tagContent)
+        // console.log("Tag content 2 : " + tagContent2.tagContent)
+        // console.log("Tag content 3 : " + tagContent3.tagContent)
        
-                
-
-    
-
     }
-    
-
-    //console.log("stored data : " + storedData)
 
     // Redirect to 'List Cards' view on success
     res.redirect(301, '/get-card');

@@ -1,9 +1,9 @@
 <br>
-<h2>Cards on Board</h2>
+<h2>Stickies on Board</h2>
 <br>
 
 <div>
-    <button class="btn btn-warning" onClick="fetchNewCards()">Fetch Cards</button>
+    <button class="btn btn-warning" onClick="fetchNewCards()">Fetch Stickies</button>
 </div>
 
 <br>
@@ -11,11 +11,10 @@
 <div class="w-50 p-2"> 
     <ul class="message-list" style="list-style: none;">
         {{#each miroData}}
-        <img style="width: 2rem; float: right;" src="https://cdn-icons-png.flaticon.com/512/522/522556.png">
-        <h5 style="" class="message-header">App Card</h5>
+        <img style="width: 2rem; float: right;" src="https://cdn-icons-png.flaticon.com/512/497/497492.png">
+        <h5 style="" class="message-header">Sticky Note</h5>
             <li><strong>ID:</strong> {{this.id}}</li>
-            <li><strong>Title:</strong> {{this.data.title}}</li>
-            <li><strong>Description:</strong> {{this.data.description}}</li>
+            <li><strong>Content:</strong> {{this.data.content}}</li>
         <hr>
         {{/each}}
     </ul>
