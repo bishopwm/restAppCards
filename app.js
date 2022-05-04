@@ -62,7 +62,6 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
 // ROUTE(POST): CREATE CARDS FROM CSV CONTENT
 app.post('/create-from-csv', function (req, res) {
     let csvCardContent = req.body.Content;
-
     
     //declare variables for sticky and tag content
     let stickyContent;
@@ -79,13 +78,13 @@ app.post('/create-from-csv', function (req, res) {
     // Loop through and make request for each line of CSV content
     let length = csvCardContent.length;
     for (let i = 0; i < length; i++) {
-
+        // Capture sticky content from csv content
         stickyContent = {
                 "content": 
                     `<strong>Title</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
                     `<strong>Description</strong>: ${csvCardContent.slice(i).shift(i++)}`
                 }
-
+        // Capture tag content from csv content
         tagContent1 = {
             "tagContent": `${csvCardContent.slice(i).shift(i++)}`
         }
@@ -96,6 +95,7 @@ app.post('/create-from-csv', function (req, res) {
             "tagContent": `${csvCardContent.slice(i).shift(i++)}`
         }
 
+        // Sort tag content 
         tagContentCollection1.push(
             tagContent1.tagContent, 
             tagContent1.tagContent, 
@@ -103,7 +103,7 @@ app.post('/create-from-csv', function (req, res) {
             tagContent1.tagContent, 
             tagContent1.tagContent, 
             tagContent1.tagContent
-            );
+        );
 
         tagContentCollection2.push(
             tagContent2.tagContent, 
@@ -112,7 +112,7 @@ app.post('/create-from-csv', function (req, res) {
             tagContent2.tagContent, 
             tagContent2.tagContent, 
             tagContent2.tagContent
-            );
+        );
 
         tagContentCollection3.push(
             tagContent3.tagContent, 
@@ -121,13 +121,9 @@ app.post('/create-from-csv', function (req, res) {
             tagContent3.tagContent, 
             tagContent3.tagContent, 
             tagContent3.tagContent
-            );
+        );
 
-
-
-
-
-        // API Request Payload
+        // API request configuration for Create Sticky API
         let payload = JSON.stringify({
 
             "data": {
@@ -145,6 +141,7 @@ app.post('/create-from-csv', function (req, res) {
                 "origin": "center"
            }
         });
+
         // API Request configuration
         let config = {
             method: 'post',
@@ -155,36 +152,77 @@ app.post('/create-from-csv', function (req, res) {
             },
             data: payload
         }
-        // Call Miro API to create App Card:
- 
-
+        // Call Miro API to create sticky, create tag, and attach tag to sticky:
         async function callMiro(){
-            
+            // Create Sticky
             try {
                 let response = await axios(config);
                 let miroData = JSON.stringify(response.data.id);
                 console.log("Sticky ID : " + miroData); 
-
+                    // Create tag
                     async function createTag(){
-                        let tagPayload = JSON.stringify({
+                        let tagPayload1 = JSON.stringify({
                             "fillColor": "blue",
                             "title": tagContentCollection1[i]
                         });
-                        let config = {
+
+
+                        let tagPayload2 = JSON.stringify({
+                            "fillColor": "red",
+                            "title": tagContentCollection2[i]
+                        });
+
+                        let tagPayload3 = JSON.stringify({
+                            "fillColor": "red",
+                            "title": tagContentCollection3[i]
+                        });
+
+                        let config1 = {
                             method: 'post',
                             url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
                             headers: { 
                             'Authorization': `Bearer ${process.env.oauthToken}`, 
                             'Content-Type': 'application/json'
                             },
-                            data: tagPayload
+                            data: tagPayload1
                         }
-                        try {
-                            let tagResponse = await axios(config);
-                            tagData = JSON.stringify(tagResponse.data.id);
-                            console.log("Tag id: " + tagData)
-                            tagId = tagData.replace(/['"]+/g, '');
 
+                        let config2 = {
+                            method: 'post',
+                            url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
+                            headers: { 
+                            'Authorization': `Bearer ${process.env.oauthToken}`, 
+                            'Content-Type': 'application/json'
+                            },
+                            data: tagPayload2
+                        }
+
+                        let config3 = {
+                            method: 'post',
+                            url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
+                            headers: { 
+                            'Authorization': `Bearer ${process.env.oauthToken}`, 
+                            'Content-Type': 'application/json'
+                            },
+                            data: tagPayload3
+                        }
+
+                        try {
+                            // API request to Create Tag endpoint
+                            let tagResponse = await axios(config1);
+                            let tagResponse2 = await axios(config2);
+                            let tagResponse3 = await axios(config3);
+
+                            tagData = JSON.stringify(tagResponse.data.id);
+                            tagData2 = JSON.stringify(tagResponse2.data.id);
+                            tagData3 = JSON.stringify(tagResponse3.data.id);
+
+                            //console.log("Tag id: " + tagData)
+                            tagId = tagData.replace(/['"]+/g, '');
+                            tagId2 = tagData2.replace(/['"]+/g, '');
+                            tagId3 = tagData3.replace(/['"]+/g, '');
+
+                                // Attach tag 1
                                 async function attachTag(){
                                     let stickyId = miroData.replace(/['"]+/g, '');
                                     let attachConfig = {
@@ -195,8 +233,8 @@ app.post('/create-from-csv', function (req, res) {
                                         'Content-Type': 'application/json'
                                         }
                                     }
-                                    
                                     try {
+                                        // API Request to attach tag to sticky note
                                         let response = await axios(attachConfig);
                                         let attachData = JSON.stringify(response.data);
                                         console.log(attachData);
@@ -207,23 +245,61 @@ app.post('/create-from-csv', function (req, res) {
                                 }
                                 attachTag()
 
+                                // Attach tag 2
+                                async function attachTag2(){
+                                    let stickyId = miroData.replace(/['"]+/g, '');
+                                    let attachConfig = {
+                                        method: 'post',
+                                        url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId2}`,
+                                        headers: { 
+                                        'Authorization': `Bearer ${process.env.oauthToken}`, 
+                                        'Content-Type': 'application/json'
+                                        }
+                                    }
+                                    try {
+                                        // API Request to attach tag to sticky note
+                                        let response = await axios(attachConfig);
+                                        let attachData = JSON.stringify(response.data);
+                                        console.log(attachData);
+                                        console.log("attach url : " + attachConfig.url)
+                                        return attachData;
+                    
+                                    } catch (err) {console.log(`ERROR: ${err}`)}
+                                }
+                                attachTag2()
+
+                                // Attach tag 3
+                                async function attachTag3(){
+                                    let stickyId = miroData.replace(/['"]+/g, '');
+                                    let attachConfig = {
+                                        method: 'post',
+                                        url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId3}`,
+                                        headers: { 
+                                        'Authorization': `Bearer ${process.env.oauthToken}`, 
+                                        'Content-Type': 'application/json'
+                                        }
+                                    }
+                                    try {
+                                        // API Request to attach tag to sticky note
+                                        let response = await axios(attachConfig);
+                                        let attachData = JSON.stringify(response.data);
+                                        console.log(attachData);
+                                        console.log("attach url : " + attachConfig.url)
+                                        return attachData;
+                    
+                                    } catch (err) {console.log(`ERROR: ${err}`)}
+                                }
+                                attachTag3()
+
+
+
                         } catch (err) {console.log(`ERROR on createTag(): ${err}`)}   
                     }
                     createTag();
-
-                
             } catch (err) {console.log(`ERROR: ${err}`)}
-            
         }
         callMiro();
-
-        // console.log("Sticky Content lives here : " + stickyContent.content);
-        // console.log("Tag content 1 : " + tagContent1.tagContent)
-        // console.log("Tag content 2 : " + tagContent2.tagContent)
-        // console.log("Tag content 3 : " + tagContent3.tagContent)
-       
     }
-
     // Redirect to 'List Cards' view on success
     res.redirect(301, '/get-card');
 });
