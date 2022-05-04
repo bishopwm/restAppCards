@@ -11,7 +11,8 @@ const axios = require('axios');
 
 // Require body-parser to parse form submissions
 var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false,
+    parameterLimit: 1000000 }));
 app.use(bodyParser.json());
 
 
@@ -178,22 +179,22 @@ app.post('/create-from-csv', function (req, res) {
                     async function createTag(){
                         let tagPayload1 = JSON.stringify({
                             "fillColor": "blue",
-                            "title": tagContentCollection1[i]
+                            "title": tagContentCollection1[i] + ` (${Math.floor(1000 + Math.random() * 9000)})`
                         });
 
                         let tagPayload2 = JSON.stringify({
                             "fillColor": "red",
-                            "title": tagContentCollection2[i]
+                            "title": tagContentCollection2[i] + ` (${Math.floor(1000 + Math.random() * 9000)})`
                         });
 
                         let tagPayload3 = JSON.stringify({
                             "fillColor": "yellow",
-                            "title": tagContentCollection3[i]
+                            "title": tagContentCollection3[i] + ` (${Math.floor(1000 + Math.random() * 9000)})`
                         });
 
                         let tagPayload4 = JSON.stringify({
                             "fillColor": "green",
-                            "title": tagContentCollection4[i]
+                            "title": tagContentCollection4[i] + ` (${Math.floor(1000 + Math.random() * 9000)})`
                         });
 
                         let config1 = {
@@ -274,7 +275,7 @@ app.post('/create-from-csv', function (req, res) {
                                         console.log("attach url : " + attachConfig.url)
                                         return attachData;
                     
-                                    } catch (err) {console.log(`ERROR: ${err}`)}
+                                    } catch (err) {console.log(`ERROR on attachTag(): ${err}`)}
                                 }
                                 attachTag()
 
@@ -297,7 +298,7 @@ app.post('/create-from-csv', function (req, res) {
                                         console.log("attach url : " + attachConfig.url)
                                         return attachData;
                     
-                                    } catch (err) {console.log(`ERROR: ${err}`)}
+                                    } catch (err) {console.log(`ERROR on attachTag2(): ${err}`)}
                                 }
                                 attachTag2()
 
@@ -320,7 +321,7 @@ app.post('/create-from-csv', function (req, res) {
                                         console.log("attach url : " + attachConfig.url)
                                         return attachData;
                     
-                                    } catch (err) {console.log(`ERROR: ${err}`)}
+                                    } catch (err) {console.log(`ERROR on attachTag3(): ${err}`)}
                                 }
                                 attachTag3()
 
@@ -343,7 +344,10 @@ app.post('/create-from-csv', function (req, res) {
                                         console.log("attach url : " + attachConfig.url)
                                         return attachData;
                     
-                                    } catch (err) {console.log(`ERROR: ${err}`)}
+                                    } catch (err) {
+                                        console.log(`ERROR on attachTag4(): ${err}`)
+
+                                    }
                                 }
                                 attachTag4()
                         } catch (err) {console.log(`ERROR on createTag(): ${err}`)}   
@@ -536,19 +540,19 @@ app.post("/update-card", function(req,res) {
     res.redirect(301, '/get-card');
 });
 
-// ROUTE(POST): DELETE EXISTING APP CARD
+// ROUTE(POST): DELETE EXISTING STICKY NOTE
 
 app.post("/delete-card", function(req,res) {
     console.log("Card ID : " + req.body.Id);
-    let cardId = req.body.Id
+    let stickyId = req.body.Id
 
     // Miro request URL for POST Create App Card:
-    let cardRequestUrl = requestUrl+`/${cardId}`
+    let stickyRequestUrl = requestUrl+`/${stickyId}`
 
     // Request configuration
     let config = {
         method: 'delete',
-        url: cardRequestUrl,
+        url: stickyRequestUrl,
         headers: { 
         'Authorization': `Bearer ${process.env.oauthToken}`, 
         'Content-Type': 'application/json'
