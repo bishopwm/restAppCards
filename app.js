@@ -60,7 +60,7 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
     res.render('uploadCSV.hbs', {fileRows});
 });
 
-// ROUTE(POST): CREATE CARDS FROM CSV CONTENT
+// ROUTE(POST): CREATE STICKIES AND TAGS FROM CSV CONTENT
 app.post('/create-from-csv', function (req, res) {
     let csvCardContent = req.body.Content;
     
@@ -87,7 +87,7 @@ app.post('/create-from-csv', function (req, res) {
                     `<strong>Title</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
                     `<strong>Description</strong>: ${csvCardContent.slice(i).shift(i++)}`
                 }
-        // Capture tag content from csv content
+        // Capture tag content from csv content, for each non-sticky related column
         tagContent1 = {
             "tagContent": `${csvCardContent.slice(i).shift(i++)}`
         }
@@ -101,7 +101,7 @@ app.post('/create-from-csv', function (req, res) {
             "tagContent": `${csvCardContent.slice(i).shift()}`
         }
 
-        // Sort tag content 
+        // Sort tag content by csv row
         tagContentCollection1.push(
             tagContent1.tagContent, 
             tagContent1.tagContent, 
@@ -151,7 +151,7 @@ app.post('/create-from-csv', function (req, res) {
                 "textAlignVertical": "top"
            },
            "position": {
-                "x": 0 + (40*i),
+                "x": 0,
                 "y": 40*i,
                 "origin": "center"
            }
@@ -357,8 +357,8 @@ app.post('/create-from-csv', function (req, res) {
         }
         callMiro();
     }
-    // Redirect to 'List Cards' view on success
-    res.redirect(301, '/get-card');
+    // Redirect to 'List Stickies' view on success
+    res.redirect(301, '/get-sticky');
 });
 
 
@@ -367,8 +367,8 @@ app.get('/', (req, res) => {
  res.render('home')
 });
 
-// ROUTE(GET) RETRIEVE CARD DATA / 'List Cards'
-app.get("/get-card", (req, res) => {
+// ROUTE(GET) RETRIEVE STICKY DATA / 'List Stickies'
+app.get("/get-sticky", (req, res) => {
     
     let config = {
         method: 'get',
@@ -378,7 +378,7 @@ app.get("/get-card", (req, res) => {
         }
     }
     // Function to call Miro API/retrieve App Cards
-    async function getCards(){
+    async function getStickies(){
         try {
             let response = await axios(config);
             let miroData = response.data.data;
@@ -387,28 +387,28 @@ app.get("/get-card", (req, res) => {
         } catch (err) {console.log(`ERROR: ${err}`)}
         return
     }
-    getCards();
+    getStickies();
 
 });
 
 
 // ROUTE(GET): RENDER 'CREATE CARD' VIEW
-  app.get("/create-card", (req, res) => {
+  app.get("/create-sticky", (req, res) => {
     res.render('createCard')    
 });
 
 // ROUTE(GET): RENDER 'UPDATE CARD' VIEW
-app.get("/update-card", (req, res) => {
+app.get("/update-sticky", (req, res) => {
     res.render('updateCard')    
 });
 
 // ROUTE(GET): RENDER 'DELETE CARD' VIEW
-app.get("/delete-card", (req, res) => {
+app.get("/delete-sticky", (req, res) => {
     res.render('deleteCard')    
 });
 
 // ROUTE(POST): CREATE STICKY
-app.post("/create-card", function(req,res) {
+app.post("/create-sticky", function(req,res) {
     let stickyTitle = req.body.Title;
     let stickyDescription = req.body.Description;
     let stickyTag1 = req.body.Tag1
@@ -499,13 +499,13 @@ app.post("/create-card", function(req,res) {
         } catch (err) {console.log(`ERROR: ${err}`)}   
     }
     callMiro();
-    res.redirect(301, '/get-card');
+    res.redirect(301, '/get-sticky');
 });
 
 
 // ROUTE(POST): UPDATE EXISTING STICKY
 
-app.post("/update-card", function(req,res) {
+app.post("/update-sticky", function(req,res) {
     let stickyId = req.body.Id
     let newStickyContent = req.body.Content;
     
@@ -537,12 +537,12 @@ app.post("/update-card", function(req,res) {
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiroUpdate();
-    res.redirect(301, '/get-card');
+    res.redirect(301, '/get-sticky');
 });
 
 // ROUTE(POST): DELETE EXISTING STICKY NOTE
 
-app.post("/delete-card", function(req,res) {
+app.post("/delete-sticky", function(req,res) {
     console.log("Card ID : " + req.body.Id);
     let stickyId = req.body.Id
 
@@ -567,7 +567,7 @@ app.post("/delete-card", function(req,res) {
         } catch (err) {console.log(`ERROR: ${err}`)}
     }
     callMiroDelete();
-    res.redirect(301, '/get-card');
+    res.redirect(301, '/get-sticky');
 });
 
 
