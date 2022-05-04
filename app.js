@@ -84,8 +84,8 @@ app.post('/create-from-csv', function (req, res) {
         // Capture sticky content from csv content
         stickyContent = {
                 "content": 
-                    `<strong>Title</strong>: ${csvCardContent.slice(i).shift(i++)}` + "<br>" +
-                    `<strong>Description</strong>: ${csvCardContent.slice(i).shift(i++)}`
+                    `<strong>${csvCardContent.slice(i).shift(i++)}</strong>` + "<br>" +
+                    `${csvCardContent.slice(i).shift(i++)}`
                 }
         // Capture tag content from csv content, for each non-sticky related column
         tagContent1 = {

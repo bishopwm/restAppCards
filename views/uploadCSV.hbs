@@ -7,7 +7,12 @@
 <div class="send-container">
     <br>
     <h2>Upload CSV</h2>
-    <p>Select a file, then click <strong>Parse CSV</strong>.<br> <em>Note: </em>You will have the option to edit the card's fields prior to generating them.</p>
+        <p>
+            Select a file, then click <strong>Parse CSV</strong>.<br> <em>Note: </em>You will have the option to edit the card's fields prior to generating them. <br><br>
+            <strong>CSV Mapping:</strong><br> CSV parser requires that your file has 6 columns — the first 2 map to the sticky itself, and the remaining columns map to tags. <br>
+            (Template available <a href="https://docs.google.com/spreadsheets/d/1QCu9Ht3h3RDbBfHh3N6S-u9QNth2P6D-eFuEz5PC9jA/edit?usp=sharing" target="_blank">here</a> —> <strong>File</strong> > <strong>Download</strong> > <strong>.csv</strong>)
+        
+        </p>
 </div>
 
 <form class="form form-group" action="/upload-csv" method="POST" enctype="multipart/form-data">
