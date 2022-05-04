@@ -63,21 +63,21 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
 app.post('/create-from-csv', function (req, res) {
     let csvCardContent = req.body.Content;
     
-    //declare variables for sticky and tag content
+    // Declare variables for sticky and tag content
     let stickyContent;
     let tagContent1;
     let tagContent2;
     let tagContent3;
     let tagContent4;
 
-    //declare variable to hold stored IDs
-    let storedData = [];
+    // Declare variables to hold tag content
     let tagContentCollection1 = [];
     let tagContentCollection2 = [];
     let tagContentCollection3 = [];
     let tagContentCollection4 = [];
 
     // Loop through and make request for each line of CSV content
+        // Set fixed length for array
     let length = csvCardContent.length;
     for (let i = 0; i < length; i++) {
         // Capture sticky content from csv content
@@ -166,6 +166,7 @@ app.post('/create-from-csv', function (req, res) {
             },
             data: payload
         }
+
         // Call Miro API to create sticky, create tag, and attach tag to sticky:
         async function callMiro(){
             // Create Sticky
@@ -236,18 +237,19 @@ app.post('/create-from-csv', function (req, res) {
                         }
 
                         try {
-                            // API request to Create Tag endpoint
+                            // API requests to Create Tag endpoint
                             let tagResponse = await axios(config1);
                             let tagResponse2 = await axios(config2);
                             let tagResponse3 = await axios(config3);
                             let tagResponse4 = await axios(config4);
 
+                            // Parse responses
                             tagData = JSON.stringify(tagResponse.data.id);
                             tagData2 = JSON.stringify(tagResponse2.data.id);
                             tagData3 = JSON.stringify(tagResponse3.data.id);
                             tagData4 = JSON.stringify(tagResponse4.data.id);
 
-                            //console.log("Tag id: " + tagData)
+                            // Clean Tag IDs from response
                             tagId = tagData.replace(/['"]+/g, '');
                             tagId2 = tagData2.replace(/['"]+/g, '');
                             tagId3 = tagData3.replace(/['"]+/g, '');
@@ -344,8 +346,6 @@ app.post('/create-from-csv', function (req, res) {
                                     } catch (err) {console.log(`ERROR: ${err}`)}
                                 }
                                 attachTag4()
-
-
                         } catch (err) {console.log(`ERROR on createTag(): ${err}`)}   
                     }
                     createTag();
@@ -499,33 +499,25 @@ app.post("/create-card", function(req,res) {
 });
 
 
-// ROUTE(POST): UPDATE EXISTING APP CARD
+// ROUTE(POST): UPDATE EXISTING STICKY
 
 app.post("/update-card", function(req,res) {
-    let cardId = req.body.Id
-    let newCardTitle = req.body.Title;
-    let newCardDescription = req.body.Description;
+    let stickyId = req.body.Id
+    let newStickyContent = req.body.Content;
     
-    // Miro request URL for POST Create App Card:
-    let cardRequestUrl = requestUrl+`/${cardId}`
+    // Miro request URL for POST Create App sticky:
+    let stickyRequestUrl = requestUrl+`/${stickyId}`
 
     let payload = JSON.stringify({
         "data": {
-             "title": newCardTitle,
-             "description": newCardDescription
-        },
-        "style": {
-             "fillColor": "#2d9bf0"
-        },
-        "geometry": {
-             "rotation": "0.0"
+             "content": newStickyContent
         }
    })
 
     // API Request configuration
     let config = {
         method: 'patch',
-        url: cardRequestUrl,
+        url: stickyRequestUrl,
         headers: { 
         'Authorization': `Bearer ${process.env.oauthToken}`, 
         'Content-Type': 'application/json'
@@ -578,47 +570,3 @@ app.post("/delete-card", function(req,res) {
 app.listen(8000, () => {
     console.log('The web server has started on port 8000');
 });
-
-
-// ARCHIVE
-
-// ROUTE(POST): CREATE NEW APP CARD
-// app.post("/create-card", function(req,res) {
-//     let cardTitle = req.body.Title;
-//     let cardDescription = req.body.Description;
-
-//     // API Request Payload
-//     let payload = JSON.stringify({
-//         "data": {
-//             "title": `${cardTitle}`,
-//             "description": `${cardDescription}`
-//         },
-//         "style": {
-//             "fillColor": "#2d9bf0"
-//         },
-//         "geometry": {
-//             "rotation": "0.0"
-//         }
-//     });
-
-//     // API Request configuration
-//     let config = {
-//         method: 'post',
-//         url: requestUrl,
-//         headers: { 
-//         'Authorization': `Bearer ${process.env.oauthToken}`, 
-//         'Content-Type': 'application/json'
-//         },
-//         data: payload
-//     }
-//     // Call Miro API to create App Card:
-//     async function callMiro(){
-//         try {
-//             let response = await axios(config);
-//             let miroData = JSON.stringify(response.data);
-//             return miroData;
-//         } catch (err) {console.log(`ERROR: ${err}`)}
-//     }
-//     callMiro();
-//     res.redirect(301, '/get-card');
-// });

@@ -6,22 +6,20 @@
 
 <div class="send-container">
     <br>
-    <h2>Update App Card</h2>
+    <h2>Update Sticky</h2>
 </div>
 <form class="form form-group" action="/update-card" method="POST">
 <div class="form-components-container">
-    <label>Card ID* (req.)</label><br>
+    <label>Sticky ID* (req.)</label><br>
     <input name="Id" type="text" placeholder="ID"><br>
-    <label>Card Title</label><br>
-    <input name="Title" type="text" placeholder="Title"><br>
-    <label>Card Description</label><br>
-    <input name="Description" type="text" placeholder="Description"><br><br>
+    <label>Sticky Content</label><br>
+    <input name="Content" type="text" placeholder="Content"><br>
     <div class="alert alert-success col-2" role="alert" style="visibility: hidden">
-    Card Updated
+    Sticky Updated
     </div>
     <input class="btn btn-primary" id="submit" type="submit" value="Submit"/>
 </div>
-    
+
 </form>
 <script>
 $('#submit').click(function(){ 
