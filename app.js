@@ -34,7 +34,36 @@ app.set('view engine', 'hbs');
 // Declare global variable for Miro API endpoint (App Cards)
 const requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/sticky_notes`
 
+// Declare global access_token variable
+let oauthAccessToken;
+
+
 // <-------- ROUTES -------->
+
+// app.get('/authorize', (req, res) => {
+//     console.log("hey from authorize")
+//     res.render(`https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=${process.env.clientID}&client_secret=${process.env.clientSecret}&code=${req.query.code}&redirect_uri=${process.env.redirectURL}`)
+//     //res.redirect(`https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=${process.env.clientID}&client_secret=${process.env.clientSecret}&code=${req.query.code}&redirect_uri=${process.env.redirectURL}`)
+
+// });
+
+
+// app.route('/authorize', (req, res) => {
+//     // The optional first parameter to `res.redirect()` is a numeric
+//     // HTTP status.
+//     res.redirect(301, `https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=${process.env.clientID}&client_secret=${process.env.clientSecret}&code=${req.query.code}&redirect_uri=${process.env.redirectURL}`);
+//   });
+
+// ROUTE (GET): Retrieve access_token from OAuth redirect
+app.get('/authorized', (req, res) => {
+    let parsedUrl = req.url;
+    let urlValues = parsedUrl.split('?')
+    console.log(urlValues[1]);
+    oauthAccessToken = urlValues[1];
+
+    res.render('authorizeApp')
+   });
+
 
 
 // ROUTE(GET): VIEW UPLOAD .CSV OPTION
@@ -162,7 +191,7 @@ app.post('/create-from-csv', function (req, res) {
             method: 'post',
             url: `https://api.miro.com/v2/boards/${process.env.boardId}/sticky_notes`,
             headers: { 
-            'Authorization': `Bearer ${process.env.oauthToken}`, 
+            'Authorization': `Bearer ${oauthAccessToken}`, 
             'Content-Type': 'application/json'
             },
             data: payload
@@ -201,7 +230,7 @@ app.post('/create-from-csv', function (req, res) {
                             method: 'post',
                             url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
                             headers: { 
-                            'Authorization': `Bearer ${process.env.oauthToken}`, 
+                            'Authorization': `Bearer ${oauthAccessToken}`, 
                             'Content-Type': 'application/json'
                             },
                             data: tagPayload1
@@ -211,7 +240,7 @@ app.post('/create-from-csv', function (req, res) {
                             method: 'post',
                             url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
                             headers: { 
-                            'Authorization': `Bearer ${process.env.oauthToken}`, 
+                            'Authorization': `Bearer ${oauthAccessToken}`, 
                             'Content-Type': 'application/json'
                             },
                             data: tagPayload2
@@ -221,7 +250,7 @@ app.post('/create-from-csv', function (req, res) {
                             method: 'post',
                             url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
                             headers: { 
-                            'Authorization': `Bearer ${process.env.oauthToken}`, 
+                            'Authorization': `Bearer ${oauthAccessToken}`, 
                             'Content-Type': 'application/json'
                             },
                             data: tagPayload3
@@ -231,7 +260,7 @@ app.post('/create-from-csv', function (req, res) {
                             method: 'post',
                             url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
                             headers: { 
-                            'Authorization': `Bearer ${process.env.oauthToken}`, 
+                            'Authorization': `Bearer ${oauthAccessToken}`, 
                             'Content-Type': 'application/json'
                             },
                             data: tagPayload4
@@ -263,7 +292,7 @@ app.post('/create-from-csv', function (req, res) {
                                         method: 'post',
                                         url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId}`,
                                         headers: { 
-                                        'Authorization': `Bearer ${process.env.oauthToken}`, 
+                                        'Authorization': `Bearer ${oauthAccessToken}`, 
                                         'Content-Type': 'application/json'
                                         }
                                     }
@@ -286,7 +315,7 @@ app.post('/create-from-csv', function (req, res) {
                                         method: 'post',
                                         url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId2}`,
                                         headers: { 
-                                        'Authorization': `Bearer ${process.env.oauthToken}`, 
+                                        'Authorization': `Bearer ${oauthAccessToken}`, 
                                         'Content-Type': 'application/json'
                                         }
                                     }
@@ -309,7 +338,7 @@ app.post('/create-from-csv', function (req, res) {
                                         method: 'post',
                                         url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId3}`,
                                         headers: { 
-                                        'Authorization': `Bearer ${process.env.oauthToken}`, 
+                                        'Authorization': `Bearer ${oauthAccessToken}`, 
                                         'Content-Type': 'application/json'
                                         }
                                     }
@@ -332,7 +361,7 @@ app.post('/create-from-csv', function (req, res) {
                                         method: 'post',
                                         url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId4}`,
                                         headers: { 
-                                        'Authorization': `Bearer ${process.env.oauthToken}`, 
+                                        'Authorization': `Bearer ${oauthAccessToken}`, 
                                         'Content-Type': 'application/json'
                                         }
                                     }
@@ -374,15 +403,14 @@ app.get("/get-sticky", (req, res) => {
         method: 'get',
         url: requestUrl,
         headers: { 
-        'Authorization': `Bearer ${process.env.oauthToken}` 
+        'Authorization': `Bearer ${oauthAccessToken}` 
         }
     }
-    // Function to call Miro API/retrieve App Cards
+    // Function to call Miro API/retrieve Sticky Notes
     async function getStickies(){
         try {
             let response = await axios(config);
             let miroData = response.data.data;
-            //console.log("API Response data: " + miroData);
             res.render('viewCard.hbs', {miroData});
         } catch (err) {console.log(`ERROR: ${err}`)}
         return
@@ -437,7 +465,7 @@ app.post("/create-sticky", function(req,res) {
         method: 'post',
         url: `https://api.miro.com/v2/boards/${process.env.boardId}/sticky_notes`,
         headers: { 
-        'Authorization': `Bearer ${process.env.oauthToken}`, 
+        'Authorization': `Bearer ${oauthAccessToken}`, 
         'Content-Type': 'application/json'
         },
         data: payload
@@ -462,7 +490,7 @@ app.post("/create-sticky", function(req,res) {
                     method: 'post',
                     url: `https://api.miro.com/v2/boards/${process.env.boardId}/tags`,
                     headers: { 
-                    'Authorization': `Bearer ${process.env.oauthToken}`, 
+                    'Authorization': `Bearer ${oauthAccessToken}`, 
                     'Content-Type': 'application/json'
                     },
                     data: tagPayload
@@ -483,7 +511,7 @@ app.post("/create-sticky", function(req,res) {
                     method: 'post',
                     url: `https://api.miro.com/v2/boards/${process.env.boardId}/items/${stickyId}?tag_id=${tagId}`,
                     headers: { 
-                    'Authorization': `Bearer ${process.env.oauthToken}`, 
+                    'Authorization': `Bearer ${oauthAccessToken}`, 
                     'Content-Type': 'application/json'
                     }
                 }
@@ -523,7 +551,7 @@ app.post("/update-sticky", function(req,res) {
         method: 'patch',
         url: stickyRequestUrl,
         headers: { 
-        'Authorization': `Bearer ${process.env.oauthToken}`, 
+        'Authorization': `Bearer ${oauthAccessToken}`, 
         'Content-Type': 'application/json'
         },
         data: payload
@@ -554,7 +582,7 @@ app.post("/delete-sticky", function(req,res) {
         method: 'delete',
         url: stickyRequestUrl,
         headers: { 
-        'Authorization': `Bearer ${process.env.oauthToken}`, 
+        'Authorization': `Bearer ${oauthAccessToken}`, 
         'Content-Type': 'application/json'
         }
     }
