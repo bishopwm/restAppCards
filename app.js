@@ -40,20 +40,6 @@ let oauthAccessToken;
 
 // <-------- ROUTES -------->
 
-// app.get('/authorize', (req, res) => {
-//     console.log("hey from authorize")
-//     res.render(`https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=${process.env.clientID}&client_secret=${process.env.clientSecret}&code=${req.query.code}&redirect_uri=${process.env.redirectURL}`)
-//     //res.redirect(`https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=${process.env.clientID}&client_secret=${process.env.clientSecret}&code=${req.query.code}&redirect_uri=${process.env.redirectURL}`)
-
-// });
-
-
-// app.route('/authorize', (req, res) => {
-//     // The optional first parameter to `res.redirect()` is a numeric
-//     // HTTP status.
-//     res.redirect(301, `https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=${process.env.clientID}&client_secret=${process.env.clientSecret}&code=${req.query.code}&redirect_uri=${process.env.redirectURL}`);
-//   });
-
 // ROUTE (GET): Retrieve access_token from OAuth redirect
 app.get('/authorized', (req, res) => {
     let parsedUrl = req.url;
@@ -68,7 +54,11 @@ app.get('/authorized', (req, res) => {
 
 // ROUTE(GET): VIEW UPLOAD .CSV OPTION
 app.get('/upload-csv', (req, res) => {
-    res.render('uploadCSV')
+    if (oauthAccessToken){
+        res.render('uploadCSV')
+    } else {
+        res.redirect('https://miro.com/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + process.env.redirectURL);
+    }   
    });
 
 // ROUTE(POST): UPLOAD .CSV FILE
@@ -398,41 +388,56 @@ app.get('/', (req, res) => {
 
 // ROUTE(GET) RETRIEVE STICKY DATA / 'List Stickies'
 app.get("/get-sticky", (req, res) => {
-    
-    let config = {
-        method: 'get',
-        url: requestUrl,
-        headers: { 
-        'Authorization': `Bearer ${oauthAccessToken}` 
+    if (oauthAccessToken){
+        let config = {
+            method: 'get',
+            url: requestUrl,
+            headers: { 
+            'Authorization': `Bearer ${oauthAccessToken}` 
+            }
         }
+        // Function to call Miro API/retrieve Sticky Notes
+        async function getStickies(){
+            try {
+                let response = await axios(config);
+                let miroData = response.data.data;
+                res.render('viewCard.hbs', {miroData});
+            } catch (err) {console.log(`ERROR: ${err}`)}
+            return
+        }
+        getStickies();
+    } else {
+        res.redirect('https://miro.com/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + process.env.redirectURL);
+        
     }
-    // Function to call Miro API/retrieve Sticky Notes
-    async function getStickies(){
-        try {
-            let response = await axios(config);
-            let miroData = response.data.data;
-            res.render('viewCard.hbs', {miroData});
-        } catch (err) {console.log(`ERROR: ${err}`)}
-        return
-    }
-    getStickies();
-
 });
 
 
 // ROUTE(GET): RENDER 'CREATE CARD' VIEW
-  app.get("/create-sticky", (req, res) => {
-    res.render('createCard')    
+app.get("/create-sticky", (req, res) => {
+    if (oauthAccessToken){
+        res.render('createCard')
+    } else {
+        res.redirect('https://miro.com/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + process.env.redirectURL);
+    }    
 });
 
 // ROUTE(GET): RENDER 'UPDATE CARD' VIEW
 app.get("/update-sticky", (req, res) => {
-    res.render('updateCard')    
+    if (oauthAccessToken){
+        res.render('updateCard')
+    } else {
+        res.redirect('https://miro.com/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + process.env.redirectURL);
+    }       
 });
 
 // ROUTE(GET): RENDER 'DELETE CARD' VIEW
 app.get("/delete-sticky", (req, res) => {
-    res.render('deleteCard')    
+    if (oauthAccessToken){
+        res.render('deleteCard')
+    } else {
+        res.redirect('https://miro.com/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + process.env.redirectURL);
+    }     
 });
 
 // ROUTE(POST): CREATE STICKY
@@ -449,7 +454,7 @@ app.post("/create-sticky", function(req,res) {
              "shape": "square"
         },
         "style": {
-             "fillColor": "light_yellow",
+             "fillColor": "light_blue",
              "textAlign": "center",
              "textAlignVertical": "top"
         },
