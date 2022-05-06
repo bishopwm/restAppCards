@@ -1,6 +1,4 @@
-// This sample app is intended to demonstrate the OAuth 2.0 flow that is required to call Miro's V2 APIs. 
-// Devs may consider using this Node.js demo as a structural basis for any other preferred language/framework.
-// NOTE: Any comments with "--->" signify part of a significant step in the flow. Comments without "--->" are added for additional reference on code.
+// This auth.js script is used to authorize the end user and pass their access_token to `./app.js`
 
 // For the full guide on Miro's OAuth 2.0 flow, please see the documentation here:
 // https://beta.developers.miro.com/docs/getting-started-with-oauth 
@@ -66,9 +64,6 @@ app.get('/', (req, res) => {
                         try {
                             let response = await axios(config);
                             console.log(JSON.stringify(response.data));
-                            //let miroResponse = JSON.stringify(response.data);
-                            // Display response in browser
-                                //let JSONResponse = `<pre><code>${miroResponse}</code></pre>`
                                 res.redirect(`http://localhost:8000/authorized?${access_token}`)
                         } catch (err) {console.log(`ERROR: ${err}`)}
                     }

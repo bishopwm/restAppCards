@@ -15,7 +15,6 @@ app.use(bodyParser.urlencoded({ extended: false,
     parameterLimit: 1000000 }));
 app.use(bodyParser.json());
 
-
 // Require multer and fast-csv for CSV upload functionality
 const multer = require('multer');
 const csv = require('fast-csv');
@@ -37,7 +36,6 @@ const requestUrl = `https://api.miro.com/v2/boards/${process.env.boardId}/sticky
 // Declare global access_token variable
 let oauthAccessToken;
 
-
 // <-------- ROUTES -------->
 
 // ROUTE (GET): Retrieve access_token from OAuth redirect
@@ -50,19 +48,14 @@ app.get('/authorized', (req, res) => {
     res.render('authorizeApp')
 });
 
-
-// ROUTE (POST): Authorize link
+// ROUTE (POST): Trigger the authorization flow
 app.post("/", function(req,res) {
     if (oauthAccessToken){
         res.render('authorizeApp')
     } else {
         res.redirect('https://miro.com/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + process.env.redirectURL);
-    }  
-
+    } 
 });
-
-
-
 
 // ROUTE(GET): VIEW UPLOAD .CSV OPTION
 app.get('/upload-csv', (req, res) => {
@@ -95,21 +88,23 @@ app.post('/upload-csv', upload.single('csv'), function (req, res) {
 app.post('/create-from-csv', function (req, res) {
     let csvCardContent = req.body.Content;
     
-    // Declare variables for sticky and tag content
+    // Declare variables for sticky content
     let stickyContent;
+    
+    // Declare variables for tag content
     let tagContent1;
     let tagContent2;
     let tagContent3;
     let tagContent4;
 
-    // Declare variables to hold tag content
+    // Declare variables to hold individual tag content
     let tagContentCollection1 = [];
     let tagContentCollection2 = [];
     let tagContentCollection3 = [];
     let tagContentCollection4 = [];
 
     // Loop through and make request for each line of CSV content
-        // Set fixed length for array
+        // Set fixed length for array to avoid manipulation of length reference
     let length = csvCardContent.length;
     for (let i = 0; i < length; i++) {
         // Capture sticky content from csv content
@@ -119,18 +114,10 @@ app.post('/create-from-csv', function (req, res) {
                     `${csvCardContent.slice(i).shift(i++)}`
                 }
         // Capture tag content from csv content, for each non-sticky related column
-        tagContent1 = {
-            "tagContent": `${csvCardContent.slice(i).shift(i++)}`
-        }
-        tagContent2 = {
-            "tagContent": `${csvCardContent.slice(i).shift(i++)}`
-        }
-        tagContent3 = {
-            "tagContent": `${csvCardContent.slice(i).shift(i++)}`
-        }
-        tagContent4 = {
-            "tagContent": `${csvCardContent.slice(i).shift()}`
-        }
+        tagContent1 = { "tagContent": `${csvCardContent.slice(i).shift(i++)}` }
+        tagContent2 = { "tagContent": `${csvCardContent.slice(i).shift(i++)}` }
+        tagContent3 = { "tagContent": `${csvCardContent.slice(i).shift(i++)}` }
+        tagContent4 = { "tagContent": `${csvCardContent.slice(i).shift()}` }
 
         // Sort tag content by csv row
         tagContentCollection1.push(
@@ -558,11 +545,8 @@ app.post("/update-sticky", function(req,res) {
     let stickyRequestUrl = requestUrl+`/${stickyId}`
 
     let payload = JSON.stringify({
-        "data": {
-             "content": newStickyContent
-        }
-   })
-
+        "data": { "content": newStickyContent }
+    });
     // API Request configuration
     let config = {
         method: 'patch',
