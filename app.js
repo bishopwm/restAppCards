@@ -48,7 +48,19 @@ app.get('/authorized', (req, res) => {
     oauthAccessToken = urlValues[1];
 
     res.render('authorizeApp')
-   });
+});
+
+
+// ROUTE (POST): Authorize link
+app.post("/", function(req,res) {
+    if (oauthAccessToken){
+        res.render('authorizeApp')
+    } else {
+        res.redirect('https://miro.com/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + process.env.redirectURL);
+    }  
+
+});
+
 
 
 
@@ -59,7 +71,7 @@ app.get('/upload-csv', (req, res) => {
     } else {
         res.redirect('https://miro.com/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + process.env.redirectURL);
     }   
-   });
+});
 
 // ROUTE(POST): UPLOAD .CSV FILE
 app.post('/upload-csv', upload.single('csv'), function (req, res) {
