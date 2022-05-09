@@ -37,7 +37,7 @@ boardId={MIRO_BOARD_ID}
 
 * `cd` to `authorization` folder
 * Run `npm install` in the `authorization` folder to install dependencies
-* Create a .env file in the root folder, and set the following variables:
+* Create a .env file in the authorization folder, and set the following variables:
 ```
 clientID={YOUR_CLIENT_ID)
 clientSecret={YOUR_CLIENT_SECRET}
